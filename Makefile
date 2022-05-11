@@ -6,7 +6,7 @@ OS=linux
 ARCH=386
 ARM=
 
-default: fmt lint
+default: fmt
 
 fmt:
 	cd comm; $(CC) fmt ./...

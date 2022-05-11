@@ -1,16 +1,21 @@
 package client
 
+import (
+	"encoding/json"
+)
+
 type Client interface {
-	call(method string, payload map[string]interface{}) (interface{}, error)
+	Call(method string, payload map[string]any) ([]byte, error)
 }
 
-type UNIXRpc struct {
-}
-
-func New() Client {
-	return &UNIXRpc{}
-}
-
-func (instance *UNIXRpc) call(method string, payload map[string]interface{}) (interface{}, error) {
-	return nil, nil
+func Call[C Client, R any](client C, method string, payload map[string]any) (*R, error) {
+	jsonResp, err := client.Call(method, payload)
+	if err != nil {
+		return nil, err
+	}
+	var typ R
+	if err := json.Unmarshal(jsonResp, &typ); err != nil {
+		return nil, err
+	}
+	return &typ, nil
 }
