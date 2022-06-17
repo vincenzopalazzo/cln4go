@@ -57,9 +57,10 @@ func DecodeToResponse(s []byte) *Response {
 	return &r
 }
 
-func (instance UnixRPC) Call(data Request) (*Response, error) {
+func (instance UnixRPC) Call(method string, data map[string]any) (*Response, error) {
 	//change request to bytes
-	dataBytes := EncodeToBytes(data)
+	request := Request{Method: method, Params: data, Jsonrpc: "2.0", Id: 0}
+	dataBytes := EncodeToBytes(request)
 	log.Printf(string(dataBytes))
 	//send data
 	_, err := instance.socket.Write(dataBytes)

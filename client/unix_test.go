@@ -22,8 +22,7 @@ func TestUnixCallOne(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	request := Request{Method: "getinfo", Params: make(map[string]interface{}), Jsonrpc: "2.0", Id: 0}
-	response, err := client.Call(request)
+	response, err := client.Call( "getinfo", make(map[string]interface{}))
 	if err != nil {
 		panic(err)
 	}
@@ -31,8 +30,5 @@ func TestUnixCallOne(t *testing.T) {
 		panic("The get info is null, there is some problem with the client implementation")
 	}
 	log.Print(response)
-	if request.Method != "getinfo" {
-		panic("method is not a getinfo command")
-	}
 	// TODO: make an assertion on the part of what the request contains
 }
