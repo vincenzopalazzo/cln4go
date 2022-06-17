@@ -9,17 +9,17 @@ import (
 )
 
 type Request struct {
-	Method  string                 `json:"method"`
-	Params  map[string]interface{} `json:"params"`
-	Jsonrpc string                 `json:"jsonrpc"`
-	Id      int                    `json:"id"`
+	Method  string         `json:"method"`
+	Params  map[string]any `json:"params"`
+	Jsonrpc string         `json:"jsonrpc"`
+	Id      int            `json:"id"`
 }
 
 type Response struct {
-	// Result string `json:result`
-	Error   string `json:"error"`
-	Jsonrpc string `json:jsonrpc`
-	Id      int    `json:"id"`
+	Result  map[string]any `json:result`
+	Error   string         `json:"error"`
+	Jsonrpc string         `json:jsonrpc`
+	Id      int            `json:"id"`
 }
 type UnixRPC struct {
 	socket net.Conn
