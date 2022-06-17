@@ -23,6 +23,9 @@ check:
 	cd client; $(CC) test -v ./...
 	cd plugin; $(CC) test -v ./...
 
+check_fmt:
+	gofmt -e ../.
+
 build:
 	@echo "nothing yet"
 
