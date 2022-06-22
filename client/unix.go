@@ -16,11 +16,12 @@ type Request struct {
 }
 
 type Response struct {
-	Result  map[string]any `json:result`
-	Error   string         `json:"error"`
-	Jsonrpc string         `json:jsonrpc`
+	Result  map[string]any `json:"result"`
+	Error   map[string]any `json:"error"`
+	Jsonrpc string         `json:"jsonrpc"`
 	Id      int            `json:"id"`
 }
+
 type UnixRPC struct {
 	socket net.Conn
 }
@@ -35,49 +36,49 @@ func NewUnix(path string) (*UnixRPC, error) {
 	}, nil
 }
 
-func EncodeToBytes(p interface{}) []byte {
+func encodeToBytes(p any) []byte {
 	buf := bytes.Buffer{}
 	enc := json.NewEncoder(&buf)
 	err := enc.Encode(p)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("uncompressed size (bytes): ", len(buf.Bytes()))
 	return buf.Bytes()
 }
 
-func DecodeToResponse(s []byte) *Response {
+func decodeToResponse(s []byte) *Response {
 	r := Response{}
 	dec := json.NewDecoder(bytes.NewReader(s))
 	err := dec.Decode(&r)
-	fmt.Print(r)
 	if err != nil {
 		log.Fatal(err)
 	}
 	return &r
 }
 
-func (instance UnixRPC) Call(method string, data map[string]any) (*Response, error) {
+func (instance UnixRPC) Call(method string, data map[string]any) (map[string]any, error) {
 	//change request to bytes
 	request := Request{Method: method, Params: data, Jsonrpc: "2.0", Id: 0}
-	dataBytes := EncodeToBytes(request)
-	log.Printf(string(dataBytes))
-	//send data
-	_, err := instance.socket.Write(dataBytes)
+	dataBytes := encodeToBytes(request)
 
-	if err != nil {
+	//send data
+	if _, err := instance.socket.Write(dataBytes); err != nil {
 		return nil, err
 	}
+
 	//read response
 	recvData := make([]byte, 1024)
 	bytesResp1, err := instance.socket.Read(recvData[:])
-	fmt.Print(string(recvData[:bytesResp1]))
-
 	if err != nil {
 		return nil, err
 	}
+
 	//decode response
-	resp := DecodeToResponse(recvData[:bytesResp1])
-	log.Print(resp)
-	return resp, nil
+	resp := decodeToResponse(recvData[:bytesResp1])
+
+	if resp.Error != nil {
+		return nil, fmt.Errorf("RPC error code: %s and msg: %s", resp.Error["code"], resp.Error["message"])
+	}
+
+	return resp.Result, nil
 }
