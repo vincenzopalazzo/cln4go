@@ -14,6 +14,10 @@ jobs:
       - name: Check out source code
         uses: actions/checkout@v1
 
+      - name: Format
+        run: if [ "$(gofmt -l . | wc -l)" -gt 0 ]; then exit 1; fi
+        if: matrix.os == 'ubuntu-latest'
+
       - name: Go test
         run: make check_fmt
 
