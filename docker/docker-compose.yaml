@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  cln:
+    build:
+      context: ../
+      dockerfile: ./docker/Dockerfile.integration_test
+    volumes:
+      - ./client/:/workdir
+      - ./comm/:/workdir
+      - ./plugin/:/workdir
