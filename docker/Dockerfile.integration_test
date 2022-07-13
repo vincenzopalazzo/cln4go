@@ -5,14 +5,11 @@ LABEL mantainer="Vincenzo Palazzo vincenzopalazzodev@gmail.com"
 RUN apt-get update && apt-get install -y \
     software-properties-common wget && \
     sh -c 'wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -' && \
-    sh -c 'wget -qO- https://storage.googleapis.com/download.dartlang.org/linux/debian/dart_stable.list > /etc/apt/sources.list.d/dart_stable.list' && \
-    apt-get update && apt-get install -y dart
+    apt-get update && apt install golang-go
 
 # Install bitcoin core and lightningd (last version)
 RUN add-apt-repository ppa:luke-jr/bitcoincore
 RUN apt-get update  && apt-get install -y bitcoind libsodium-dev libpq-dev jq make
-
-RUN apt install golang-go
 
 ENV CLIGHTNING_VERSION=0.10.2
 
