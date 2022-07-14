@@ -3,7 +3,7 @@ LABEL mantainer="Vincenzo Palazzo vincenzopalazzodev@gmail.com"
 
 # Ubuntu utils
 RUN apt-get update && apt-get install -y \
-    software-properties-common wget tar && \
+    software-properties-common build-essential wget tar && \
     wget https://go.dev/dl/go1.18.4.linux-amd64.tar.gz && \
     tar -C /usr/local -xzf go1.18.4.linux-amd64.tar.gz
 ENV GOROOT=/usr/local/go
