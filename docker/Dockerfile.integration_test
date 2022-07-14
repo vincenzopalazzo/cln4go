@@ -27,4 +27,4 @@ ENV PATH=/opt/clightning-v$CLIGHTNING_VERSION/bin:$PATH
 
 WORKDIR workdir
 
-CMD ["go" "test"]
+CMD ["./entrypoint.sh"]
