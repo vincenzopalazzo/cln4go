@@ -1,0 +1,20 @@
+#config c-lightning
+network=regtest
+alias=YELLOWSUCKER_TES_ONE
+rgb=03ad98
+
+#Config node testnet
+bind-addr=127.0.0.1:19735
+
+#config bitcoin core
+bitcoin-datadir=/workdir/bitcoin_dir
+bitcoin-rpcuser=sandbox
+bitcoin-rpcpassword=sandbox
+bitcoin-rpcport=18333
+log-level=debug
+
+#plugin=/workdir/code/packages/cln_plugin/cln_dart
+#plugin=/workdir/code/packages/cln_plugin/cln_class_dart
+
+log-file=/workdir/node_one.log
+allow-deprecated-apis=true

@@ -6,6 +6,5 @@ services:
       context: ../
       dockerfile: ./docker/Dockerfile.integration_test
     volumes:
-      - ./client/:/workdir
-      - ./comm/:/workdir
-      - ./plugin/:/workdir
+      - ./sandbox/:/workdir
+      - ../:/workdir/code

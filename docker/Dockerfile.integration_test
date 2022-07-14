@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
 RUN add-apt-repository ppa:luke-jr/bitcoincore
 RUN apt-get update  && apt-get install -y bitcoind libsodium-dev libpq-dev jq make
 
-ENV CLIGHTNING_VERSION=0.10.2
+ENV CLIGHTNING_VERSION=0.11.2
 
 RUN wget https://github.com/ElementsProject/lightning/releases/download/v$CLIGHTNING_VERSION/clightning-v$CLIGHTNING_VERSION-Ubuntu-20.04.tar.xz && \
     tar -xvf clightning-v$CLIGHTNING_VERSION-Ubuntu-20.04.tar.xz -C /opt && cd /opt && \
@@ -21,10 +21,8 @@ RUN rm -r clightning-v$CLIGHTNING_VERSION-Ubuntu-20.04.tar.xz
 
 
 ENV PATH $PATH:/usr/local/go/bin
-ENV CLN_UNIX_SOCKET=/opt/clightning-v$CLIGHTNING_VERSION/bin:$PATH
+ENV PATH=/opt/clightning-v$CLIGHTNING_VERSION/bin:$PATH
 
 WORKDIR workdir
-
-CMD ["cd" "client"]
 
 CMD ["go" "test"]
