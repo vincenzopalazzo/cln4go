@@ -3,9 +3,11 @@ LABEL mantainer="Vincenzo Palazzo vincenzopalazzodev@gmail.com"
 
 # Ubuntu utils
 RUN apt-get update && apt-get install -y \
-    software-properties-common wget && \
-    sh -c 'wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -' && \
-    apt-get update && apt install golang-go
+    software-properties-common wget tar && \
+    wget https://go.dev/dl/go1.18.4.linux-amd64.tar.gz && \
+    tar -C /usr/local -xzf go1.18.4.linux-amd64.tar.gz
+ENV GOROOT=/usr/local/go
+ENV GOPATH=$HOME/go
 
 # Install bitcoin core and lightningd (last version)
 RUN add-apt-repository ppa:luke-jr/bitcoincore

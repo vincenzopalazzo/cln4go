@@ -1,7 +1,7 @@
 #!/bin/bash
-export PATH="$PATH":"/usr/local/go/bin"
+export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
+go version
 ./run-bitcoin.sh
-
 cd code || exit 1
 # FIXME: in the future we will build the plugin here and they need to be compiled
 # before run it
