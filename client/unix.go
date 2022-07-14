@@ -67,14 +67,25 @@ func (instance UnixRPC) Call(method string, data map[string]any) (map[string]any
 	}
 
 	//read response
-	recvData := make([]byte, 1024)
-	bytesResp1, err := instance.socket.Read(recvData[:])
-	if err != nil {
-		return nil, err
+	// FIXME: move in https://github.com/LNOpenMetrics/lnmetrics.utils
+	buffSize := 1024
+	buffer := make([]byte, 0)
+	for {
+		recvData := make([]byte, buffSize)
+		bytesResp1, err := instance.socket.Read(recvData[:])
+
+		if err != nil {
+			return nil, err
+		}
+		buffer = append(buffer, recvData[:bytesResp1]...)
+
+		if bytesResp1 < buffSize {
+			break
+		}
 	}
 
 	//decode response
-	resp := decodeToResponse(recvData[:bytesResp1])
+	resp := decodeToResponse(buffer)
 
 	if resp.Error != nil {
 		return nil, fmt.Errorf("RPC error code: %s and msg: %s", resp.Error["code"], resp.Error["message"])
