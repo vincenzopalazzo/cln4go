@@ -1,7 +1,15 @@
 package plugin
 
-type RPCCallback[T any] = func(*Plugin[T], map[string]any) (map[string]any, error)
-type voidRPCCallback[T any] = func(*Plugin[T], map[string]any)
+// https://github.com/golang/go/issues/46477#issuecomment-1134888278
+// type RPCCallback[T any] = func(*Plugin[T], map[string]any) (map[string]any, error)
+// type voidRPCCallback[T any] = func(*Plugin[T], map[string]any)
+
+// RPCCommand
+// FIXME: override the command pattern with the generic type alias when implemented
+type RPCCommand[T any] interface {
+	Call(*Plugin[T], map[string]any) (map[string]any, error)
+	VoidCall(*Plugin[T], map[string]any)
+}
 
 type rpcOption struct {
 	Name        string `json:"name"`

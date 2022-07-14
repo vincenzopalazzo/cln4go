@@ -27,7 +27,7 @@ func New[T any](state *T, dynamic bool) *Plugin[T] {
 	}
 }
 
-func (instance *Plugin[T]) RegisterRPCMethod(name string, usage string, description string, callback RPCCallback[T]) {
+func (instance *Plugin[T]) RegisterRPCMethod(name string, usage string, description string, callback RPCCommand[T]) {
 	instance.rpcMethod[name] = &rpcMethod[T]{
 		name:            name,
 		usage:           usage,
@@ -37,7 +37,7 @@ func (instance *Plugin[T]) RegisterRPCMethod(name string, usage string, descript
 	}
 }
 
-func (instance *Plugin[T]) RegisterNotification(name string, callback voidRPCCallback[T]) {
+func (instance *Plugin[T]) RegisterNotification(name string, callback RPCCommand[T]) {
 	instance.notification[name] = &rpcNotification[T]{
 		onEvent:  name,
 		callback: callback,
@@ -71,8 +71,8 @@ func (instance *Plugin[T]) handleNotification(onEvent string, request map[string
 }
 
 func (instance *Plugin[T]) configurePlugin() {
-	instance.RegisterRPCMethod("getmanifest", "", "", RPCCallback[T](getManifest))
-	instance.RegisterRPCMethod("init", "", "", RPCCallback[T](initMethod))
+	instance.RegisterRPCMethod("getmanifest", "", "", &getManifest[T]{})
+	instance.RegisterRPCMethod("init", "", "", &initMethod[T]{})
 }
 
 func (instance *Plugin[T]) Start() {
