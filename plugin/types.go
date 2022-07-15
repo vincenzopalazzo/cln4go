@@ -22,17 +22,3 @@ type rpcOption struct {
 	Deprecated  bool   `json:"deprecated"`
 	Value       any    `json:"-"`
 }
-
-type request struct {
-	Method  string         `json:"method"`
-	Params  map[string]any `json:"params"`
-	Jsonrpc string         `json:"jsonrpc"`
-	Id      *int           `json:"idm,omitempty"`
-}
-
-type response struct {
-	Result  map[string]any `json:"result,omitempty"`
-	Error   map[string]any `json:"error,omitempty"`
-	Jsonrpc string         `json:"jsonrpc"`
-	Id      *int           `json:"id,omitempty"`
-}

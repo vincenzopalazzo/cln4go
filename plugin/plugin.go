@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+
+	"github.com/vincenzopalazzo/cln4go/comm/jsonrpcv2"
 )
 
 type Plugin[T any] struct {
@@ -96,13 +98,13 @@ func (instance *Plugin[T]) Start() {
 		if err != nil {
 			panic(err)
 		}
-		var request request
+		var request jsonrpcv2.Request
 		if err := json.Unmarshal(rawRequest, &request); err != nil {
 			panic(err)
 		}
 		if request.Id != nil {
 			result, _ := instance.callRPCMethod(request.Method, request.Params)
-			response := response{Id: request.Id, Error: nil, Result: result}
+			response := jsonrpcv2.Response{Id: request.Id, Error: nil, Result: result}
 			responseStr, err := json.Marshal(response)
 			if err != nil {
 				panic(err)
