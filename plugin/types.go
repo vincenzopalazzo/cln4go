@@ -8,7 +8,10 @@ package plugin
 // FIXME: override the command pattern with the generic type alias when implemented
 type RPCCommand[T any] interface {
 	Call(*Plugin[T], map[string]any) (map[string]any, error)
-	VoidCall(*Plugin[T], map[string]any)
+}
+
+type RPCEvent[T any] interface {
+	Call(*Plugin[T], map[string]any)
 }
 
 type rpcOption struct {
@@ -17,6 +20,7 @@ type rpcOption struct {
 	Default     string `json:"default"`
 	Description string `json:"description"`
 	Deprecated  bool   `json:"deprecated"`
+	Value       any    `json:"-"`
 }
 
 type request struct {
