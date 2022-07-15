@@ -46,7 +46,8 @@ func decodeToResponse(s []byte) *jsonrpcv2.Response {
 
 func (instance UnixRPC) Call(method string, data map[string]any) (map[string]any, error) {
 	//change request to bytes
-	request := jsonrpcv2.Request{Method: method, Params: data, Jsonrpc: "2.0", Id: 0}
+	id := 12
+	request := jsonrpcv2.Request{Method: method, Params: data, Jsonrpc: "2.0", Id: &id}
 	dataBytes := encodeToBytes(request)
 
 	//send data
