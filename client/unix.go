@@ -6,21 +6,9 @@ import (
 	"fmt"
 	"log"
 	"net"
+
+	"github.com/vincenzopalazzo/cln4go/comm/jsonrpcv2"
 )
-
-type Request struct {
-	Method  string         `json:"method"`
-	Params  map[string]any `json:"params"`
-	Jsonrpc string         `json:"jsonrpc"`
-	Id      int            `json:"id"`
-}
-
-type Response struct {
-	Result  map[string]any `json:"result"`
-	Error   map[string]any `json:"error"`
-	Jsonrpc string         `json:"jsonrpc"`
-	Id      int            `json:"id"`
-}
 
 type UnixRPC struct {
 	socket net.Conn
@@ -46,8 +34,8 @@ func encodeToBytes(p any) []byte {
 	return buf.Bytes()
 }
 
-func decodeToResponse(s []byte) *Response {
-	r := Response{}
+func decodeToResponse(s []byte) *jsonrpcv2.Response {
+	r := jsonrpcv2.Response{}
 	dec := json.NewDecoder(bytes.NewReader(s))
 	err := dec.Decode(&r)
 	if err != nil {
@@ -58,7 +46,7 @@ func decodeToResponse(s []byte) *Response {
 
 func (instance UnixRPC) Call(method string, data map[string]any) (map[string]any, error) {
 	//change request to bytes
-	request := Request{Method: method, Params: data, Jsonrpc: "2.0", Id: 0}
+	request := jsonrpcv2.Request{Method: method, Params: data, Jsonrpc: "2.0", Id: 0}
 	dataBytes := encodeToBytes(request)
 
 	//send data
