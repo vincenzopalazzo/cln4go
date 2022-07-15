@@ -14,16 +14,17 @@ type Plugin[T any] struct {
 	Options       map[string]*rpcOption
 	dynamic       bool
 	Configuration map[string]any
+	onInit        *func(state *T, config map[string]any) map[string]any
 }
 
-// TODO: add onInit callback
-func New[T any](state *T, dynamic bool) *Plugin[T] {
+func New[T any](state *T, dynamic bool, onInit *func(state *T, config map[string]any) map[string]any) *Plugin[T] {
 	return &Plugin[T]{
 		State:        state,
 		rpcMethod:    make(map[string]*rpcMethod[T]),
 		notification: make(map[string]*rpcNotification[T]),
 		Options:      make(map[string]*rpcOption),
 		dynamic:      dynamic,
+		onInit:       onInit,
 	}
 }
 
@@ -37,7 +38,7 @@ func (instance *Plugin[T]) RegisterRPCMethod(name string, usage string, descript
 	}
 }
 
-func (instance *Plugin[T]) RegisterNotification(name string, callback RPCCommand[T]) {
+func (instance *Plugin[T]) RegisterNotification(name string, callback RPCEvent[T]) {
 	instance.notification[name] = &rpcNotification[T]{
 		onEvent:  name,
 		callback: callback,
@@ -52,6 +53,19 @@ func (instance *Plugin[T]) AddOption(name string, typ string, defaultValue strin
 		Description: description,
 		Deprecated:  deprecated,
 	}
+}
+
+func (instance *Plugin[T]) GetOpt(key string) (any, bool) {
+	val, found := instance.Options[key]
+	if !found {
+		return nil, false
+	}
+	return val.Value, true
+}
+
+func (instance *Plugin[T]) GetConf(key string) (any, bool) {
+	val, found := instance.Configuration[key]
+	return val, found
 }
 
 func (instance *Plugin[T]) callRPCMethod(methodName string, request map[string]any) (map[string]any, error) {

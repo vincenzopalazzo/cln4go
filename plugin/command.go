@@ -14,9 +14,9 @@ func (instance *rpcMethod[T]) Call(plugin *Plugin[T], request map[string]any) (m
 
 type rpcNotification[T any] struct {
 	onEvent  string
-	callback RPCCommand[T]
+	callback RPCEvent[T]
 }
 
 func (instance *rpcNotification[T]) Call(plugin *Plugin[T], request map[string]any) {
-	instance.callback.VoidCall(plugin, request)
+	instance.callback.Call(plugin, request)
 }
