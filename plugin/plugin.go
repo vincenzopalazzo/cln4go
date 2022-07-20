@@ -11,8 +11,10 @@ import (
 
 type Plugin[T any] struct {
 	State         *T
-	rpcMethod     map[string]*rpcMethod[T]
-	notification  map[string]*rpcNotification[T]
+	rpcMethods     map[string]*rpcMethod[T]
+	notifications  map[string]*rpcNotification[T]
+	hooks          map[string]*rpcHook[T]
+	subscriptions  map[string]*rpcNotification[T]
 	Options       map[string]*rpcOption
 	dynamic       bool
 	Configuration map[string]any
@@ -41,19 +43,25 @@ func (instance *Plugin[T]) RegisterRPCMethod(name string, usage string, descript
 }
 
 func (instance *Plugin[T]) RegisterNotification(name string, callback RPCEvent[T]) {
-	instance.notification[name] = &rpcNotification[T]{
+	instance.notifications[name] = &rpcNotification[T]{
 		onEvent:  name,
 		callback: callback,
 	}
 }
 
-func (instance *Plugin[T]) AddOption(name string, typ string, defaultValue string, description string, deprecated bool) {
-	instance.Options[name] = &rpcOption{
-		Name:        name,
-		Type:        typ,
-		Default:     defaultValue,
-		Description: description,
-		Deprecated:  deprecated,
+func (instance *Plugin[T]) RegisterHook(name string, before []string, after []string, callback RPCCommand[T]) {
+	instance.hooks[name] = &rpcHook[T]{
+		name: 	  	name,
+		before: 	   	before,
+		after: 	   	after,
+		callback:  	callback,
+	}
+}
+
+func (instance *Plugin[T]) RegisterSubscription(name string, callback RPCEvent[T]) {
+	instance.subscriptions[name] = &rpcNotification[T]{
+		onEvent:  name,
+		callback: callback,
 	}
 }
 
@@ -71,7 +79,7 @@ func (instance *Plugin[T]) GetConf(key string) (any, bool) {
 }
 
 func (instance *Plugin[T]) callRPCMethod(methodName string, request map[string]any) (map[string]any, error) {
-	callback, found := instance.rpcMethod[methodName]
+	callback, found := instance.rpcMethods[methodName]
 	if !found {
 		return nil, fmt.Errorf("RPC method with name %s not found", methodName)
 	}
