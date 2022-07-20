@@ -69,6 +69,13 @@ func (instance *Plugin[T]) RegisterHook(name string, before []string, after []st
 	}
 }
 
+func (instance *Plugin[T]) RegisterSubscription(name string, callback RPCEvent[T]) {
+	instance.subscriptions[name] = &rpcNotification[T]{
+		onEvent:  name,
+		callback: callback,
+	}
+}
+
 func (instance *Plugin[T]) GetOpt(key string) (any, bool) {
 	val, found := instance.Options[key]
 	if !found {
