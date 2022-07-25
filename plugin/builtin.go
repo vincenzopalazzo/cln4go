@@ -1,19 +1,43 @@
 package plugin
-import (
-	"encoding/json"
-)
 
-type getManifest[T any] struct{}
+func generateArray[V any](mapData map[string]V) []V {
+	v := make([]V, 0, len(mapData))
 
-func (instance *getManifest[T]) Call(plugin *Plugin[T], request map[string]any) (map[string]any, error) {
-	result := make(map[string]any)
-	// TODO: feel the getmanifest result
-	result["options"], _ = json.Marshal(plugin.Options)
-	result["rpcmethods"], _ = json.Marshal(plugin.rpcMethods)
-	result["hooks"], _ = json.Marshal(plugin.hooks)
-	result["subscriptions"], _ = json.Marshal(plugin.subscriptions)
-	result["notifications"], _ = json.Marshal(plugin.notifications);
-	result["dynamic"] = plugin.dynamic;
+	for _, value := range mapData {
+		v = append(v, value)
+	}
+	return v
+}
+
+func generateKeyArray[V any](mapData map[string]V) []string {
+	k := make([]string, 0, len(mapData))
+
+	for key, _ := range mapData {
+		k = append(k, key)
+	}
+
+	return k
+}
+
+type getManifest[T any] struct {
+	RpcMethods     []*rpcMethod[T]
+	// Notifications  []*any
+	Hooks          []*rpcHook[T]
+	Subscriptions  []string
+	Options        []*rpcOption
+	Dynamic        bool
+}
+
+func (instance *getManifest[T]) Call(plugin *Plugin[T], request map[string]any) (any, error) {
+	result := &getManifest[T]{
+
+	}
+	result.Options = generateArray(plugin.Options)
+	result.RpcMethods = generateArray(plugin.RpcMethods)
+	result.Hooks = generateArray(plugin.Hooks)
+	result.Subscriptions= generateKeyArray(plugin.Subscriptions)
+	// result.Notifications = generateArray(plugin.Notifications)
+	result.Dynamic = plugin.dynamic;
 	return result, nil
 }
 
