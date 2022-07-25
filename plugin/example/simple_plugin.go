@@ -13,7 +13,7 @@ func (instance *OnRPCCommand[T]) Call(plugin *plugin.Plugin[T], request map[stri
 type Hello[T PluginState] struct{}
 
 func (instance *Hello[T]) Call(plugin *plugin.Plugin[T], request map[string]any) (map[string]any, error) {
-	return map[string]any{"hello": "hello from go 1.18"}, nil
+	return map[string]any{"message": "hello from go 1.18"}, nil
 }
 
 func main() {
