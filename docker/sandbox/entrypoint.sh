@@ -3,9 +3,7 @@ export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 go version
 ./run-bitcoin.sh
 cd code || exit 1
-# FIXME: in the future we will build the plugin here and they need to be compiled
-# before run it
-make
+make build
 cd .. || exit 1
 ./run-clightning.sh
 cd code || exit 1
