@@ -27,7 +27,7 @@ check_fmt:
 	gofmt -e ../.
 
 build:
-	@echo "nothing yet"
+	cd plugin; make build
 
-update_utils:
+dep:
 	$(CC) mod vendor
