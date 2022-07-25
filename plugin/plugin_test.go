@@ -14,12 +14,16 @@ func TestCallFistMethod(t *testing.T) {
 		panic(err)
 	}
 	response, err := client.Call("hello", make(map[string]interface{}))
+	if err != nil {
+		panic(err)
+	}
+
 	message, found := response["message"]
 	if !found {
 		t.Error("The message is not found")
 	}
 
 	if message != "hello from go 1.18" {
-		t.Error("message received %s different from expected %s", message, "hello from go 1.18")
+		t.Errorf("message received %s different from expected %s", message, "hello from go 1.18")
 	}
 }
