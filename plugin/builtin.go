@@ -1,7 +1,4 @@
 package plugin
-import (
-	"encoding/json"
-)
 
 import (
 	"github.com/vincenzopalazzo/cln4go/comm"
