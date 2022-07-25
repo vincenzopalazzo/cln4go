@@ -11,10 +11,10 @@ import (
 
 type Plugin[T any] struct {
 	State         *T
-	rpcMethods     map[string]*rpcMethod[T]
-	notifications  map[string]*rpcNotification[T]
-	hooks          map[string]*rpcHook[T]
-	subscriptions  map[string]*rpcNotification[T]
+	RpcMethods     map[string]*rpcMethod[T]
+	Notifications  map[string]*rpcNotification[T]
+	Hooks          map[string]*rpcHook[T]
+	Subscriptions  map[string]*rpcNotification[T]
 	Options       map[string]*rpcOption
 	dynamic       bool
 	Configuration map[string]any
@@ -33,35 +33,28 @@ func New[T any](state *T, dynamic bool, onInit *func(state *T, config map[string
 }
 
 func (instance *Plugin[T]) RegisterRPCMethod(name string, usage string, description string, callback RPCCommand[T]) {
-	instance.rpcMethod[name] = &rpcMethod[T]{
+	instance.RpcMethods[name] = &rpcMethod[T]{
 		name:            name,
 		usage:           usage,
 		description:     description,
-		longDescription: description,
+		LongDescription: description,
 		callback:        callback,
 	}
 }
 
 func (instance *Plugin[T]) RegisterNotification(name string, callback RPCEvent[T]) {
-	instance.notifications[name] = &rpcNotification[T]{
+	instance.Notifications[name] = &rpcNotification[T]{
 		onEvent:  name,
 		callback: callback,
 	}
 }
 
 func (instance *Plugin[T]) RegisterHook(name string, before []string, after []string, callback RPCCommand[T]) {
-	instance.hooks[name] = &rpcHook[T]{
+	instance.Hooks[name] = &rpcHook[T]{
 		name: 	  	name,
 		before: 	   	before,
 		after: 	   	after,
 		callback:  	callback,
-	}
-}
-
-func (instance *Plugin[T]) RegisterSubscription(name string, callback RPCEvent[T]) {
-	instance.subscriptions[name] = &rpcNotification[T]{
-		onEvent:  name,
-		callback: callback,
 	}
 }
 
@@ -79,7 +72,7 @@ func (instance *Plugin[T]) GetConf(key string) (any, bool) {
 }
 
 func (instance *Plugin[T]) callRPCMethod(methodName string, request map[string]any) (map[string]any, error) {
-	callback, found := instance.rpcMethods[methodName]
+	callback, found := instance.RpcMethods[methodName]
 	if !found {
 		return nil, fmt.Errorf("RPC method with name %s not found", methodName)
 	}
@@ -87,7 +80,7 @@ func (instance *Plugin[T]) callRPCMethod(methodName string, request map[string]a
 }
 
 func (instance *Plugin[T]) handleNotification(onEvent string, request map[string]any) {
-	callback, found := instance.notification[onEvent]
+	callback, found := instance.Notifications[onEvent]
 	if !found {
 		panic(fmt.Sprintf("RPC notification with name %s not found", onEvent))
 	}
@@ -101,6 +94,7 @@ func (instance *Plugin[T]) configurePlugin() {
 
 func (instance *Plugin[T]) Start() {
 	reader := bufio.NewReader(os.Stdin)
+	writer := bufio.NewReader(os.Stdout)
 	for {
 		rawRequest, _, err := reader.ReadLine()
 		if err != nil {
