@@ -11,10 +11,10 @@ import (
 
 type Plugin[T any] struct {
 	State         *T
-	RpcMethods     map[string]*rpcMethod[T]
-	Notifications  map[string]*rpcNotification[T]
-	Hooks          map[string]*rpcHook[T]
-	Subscriptions  map[string]*rpcNotification[T]
+	RpcMethods    map[string]*rpcMethod[T]
+	Notifications map[string]*rpcNotification[T]
+	Hooks         map[string]*rpcHook[T]
+	Subscriptions map[string]*rpcNotification[T]
 	Options       map[string]*rpcOption
 	dynamic       bool
 	Configuration map[string]any
@@ -23,22 +23,33 @@ type Plugin[T any] struct {
 
 func New[T any](state *T, dynamic bool, onInit *func(state *T, config map[string]any) map[string]any) *Plugin[T] {
 	return &Plugin[T]{
-		State:        state,
-		rpcMethod:    make(map[string]*rpcMethod[T]),
-		notification: make(map[string]*rpcNotification[T]),
-		Options:      make(map[string]*rpcOption),
-		dynamic:      dynamic,
-		onInit:       onInit,
+		State:         state,
+		RpcMethods:    make(map[string]*rpcMethod[T]),
+		Notifications: make(map[string]*rpcNotification[T]),
+		Options:       make(map[string]*rpcOption),
+		dynamic:       dynamic,
+		onInit:        onInit,
 	}
 }
 
 func (instance *Plugin[T]) RegisterRPCMethod(name string, usage string, description string, callback RPCCommand[T]) {
 	instance.RpcMethods[name] = &rpcMethod[T]{
-		name:            name,
-		usage:           usage,
-		description:     description,
+		Name:            name,
+		Usage:           usage,
+		Description:     description,
 		LongDescription: description,
 		callback:        callback,
+	}
+}
+
+func (instance *Plugin[T]) RegisterOption(name string, typ string, def string, description string, deprecated bool) {
+	instance.Options[name] = &rpcOption{
+		Name:        name,
+		Type:        typ,
+		Default:     def,
+		Description: description,
+		Deprecated:  deprecated,
+		Value:       nil,
 	}
 }
 
@@ -51,10 +62,10 @@ func (instance *Plugin[T]) RegisterNotification(name string, callback RPCEvent[T
 
 func (instance *Plugin[T]) RegisterHook(name string, before []string, after []string, callback RPCCommand[T]) {
 	instance.Hooks[name] = &rpcHook[T]{
-		name: 	  	name,
-		before: 	   	before,
-		after: 	   	after,
-		callback:  	callback,
+		name:     name,
+		before:   before,
+		after:    after,
+		callback: callback,
 	}
 }
 
@@ -93,13 +104,30 @@ func (instance *Plugin[T]) configurePlugin() {
 }
 
 func (instance *Plugin[T]) Start() {
+	instance.configurePlugin()
 	reader := bufio.NewReader(os.Stdin)
-	writer := bufio.NewReader(os.Stdout)
+	writer := bufio.NewWriter(os.Stdout)
+	debug := bufio.NewWriter(os.Stderr)
 	for {
-		rawRequest, _, err := reader.ReadLine()
-		if err != nil {
-			panic(err)
+		//read response
+		// FIXME: move in https://github.com/LNOpenMetrics/lnmetrics.utils
+		buffSize := 1024
+		rawRequest := make([]byte, 0)
+		for {
+			recvData := make([]byte, buffSize)
+			bytesResp1, err := reader.Read(recvData[:])
+
+			if err != nil {
+				panic(err)
+			}
+			rawRequest = append(rawRequest, recvData[:bytesResp1]...)
+
+			if bytesResp1 < buffSize {
+				break
+			}
 		}
+
+		debug.Write(rawRequest)
 		var request jsonrpcv2.Request
 		if err := json.Unmarshal(rawRequest, &request); err != nil {
 			panic(err)
@@ -111,7 +139,8 @@ func (instance *Plugin[T]) Start() {
 			if err != nil {
 				panic(err)
 			}
-			fmt.Print(string(responseStr))
+			writer.Write(responseStr)
+			writer.Flush()
 		} else {
 			instance.handleNotification(request.Method, request.Params)
 		}

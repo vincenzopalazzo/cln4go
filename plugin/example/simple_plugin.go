@@ -18,8 +18,8 @@ func (instance *Hello[T]) Call(plugin *plugin.Plugin[T], request map[string]any)
 
 func main() {
 	state := PluginState{}
-	plugin := plugin.New(&state, false, nil)
-	plugin.AddOption("foo", "string", "Hello Go", "An example of option", false)
+	plugin := plugin.New(&state, true, nil)
+	plugin.RegisterOption("foo", "string", "Hello Go", "An example of option", false)
 	plugin.RegisterRPCMethod("hello", "", "an example of rpc method", &Hello[PluginState]{})
 	plugin.RegisterNotification("rpc_command", &OnRPCCommand[PluginState]{})
 	plugin.Start()
