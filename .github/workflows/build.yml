@@ -26,5 +26,5 @@ jobs:
       - name: Go test
         run: make check_fmt
 
-      #- name: Build
-      #  run: make build OS=${{ matrix.OS }} ARCH=${{ matrix.ARCH }} ARM=${{ matrix.ARM }}
+      - name: Go check build
+        run: make build
