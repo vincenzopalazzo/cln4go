@@ -1,43 +1,21 @@
 package plugin
 
-func generateArray[V any](mapData map[string]V) []V {
-	v := make([]V, 0, len(mapData))
+import (
+	"github.com/vincenzopalazzo/cln4go/comm"
+)
 
-	for _, value := range mapData {
-		v = append(v, value)
-	}
-	return v
-}
+type getManifest[T any] struct{}
 
-func generateKeyArray[V any](mapData map[string]V) []string {
-	k := make([]string, 0, len(mapData))
-
-	for key, _ := range mapData {
-		k = append(k, key)
-	}
-
-	return k
-}
-
-type getManifest[T any] struct {
-	RpcMethods     []*rpcMethod[T]
-	// Notifications  []*any
-	Hooks          []*rpcHook[T]
-	Subscriptions  []string
-	Options        []*rpcOption
-	Dynamic        bool
-}
-
-func (instance *getManifest[T]) Call(plugin *Plugin[T], request map[string]any) (any, error) {
-	result := &getManifest[T]{
-
-	}
-	result.Options = generateArray(plugin.Options)
-	result.RpcMethods = generateArray(plugin.RpcMethods)
-	result.Hooks = generateArray(plugin.Hooks)
-	result.Subscriptions= generateKeyArray(plugin.Subscriptions)
-	// result.Notifications = generateArray(plugin.Notifications)
-	result.Dynamic = plugin.dynamic;
+func (instance *getManifest[T]) Call(plugin *Plugin[T], request map[string]any) (map[string]any, error) {
+	result := make(map[string]any)
+	result["options"] = comm.GenerateArray(plugin.Options)
+	result["rpcmethods"] = comm.GenerateArray(plugin.RpcMethods)
+	result["hooks"] = comm.GenerateArray(plugin.Hooks)
+	result["subscriptions"] = comm.GenerateKeyArray(plugin.Subscriptions)
+	// TODO: add notifications
+	result["notifications"] = make([]string, 0)
+	result["dynamic"] = plugin.dynamic
+	// TODO: add featurebits
 	return result, nil
 }
 
@@ -49,5 +27,5 @@ func (instance *initMethod[T]) Call(plugin *Plugin[T], request map[string]any) (
 	if plugin.onInit != nil {
 		return (*plugin.onInit)(plugin.State, request), nil
 	}
-	return map[string]any{"hello": "hello from go 1.18"}, nil
+	return map[string]any{}, nil
 }
