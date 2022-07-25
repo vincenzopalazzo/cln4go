@@ -1,10 +1,20 @@
 package jsonrpcv2
 
 type Request struct {
-	Method  string         `json:"method"`
-	Params  map[string]any `json:"params"`
-	Jsonrpc string         `json:"jsonrpc"`
-	Id      *int           `json:"id"`
+	Method  string `json:"method"`
+	Params  any    `json:"params"`
+	Jsonrpc string `json:"jsonrpc"`
+	Id      *int   `json:"id"`
+}
+
+//TODO: core lightning should be consistent with the type that return
+// in the params
+func (instance *Request) GetParams() map[string]any {
+	unboxed, ok := instance.Params.(map[string]any)
+	if !ok {
+		return map[string]any{}
+	}
+	return unboxed
 }
 
 type Response struct {

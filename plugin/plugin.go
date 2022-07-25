@@ -130,10 +130,10 @@ func (instance *Plugin[T]) Start() {
 		debug.Write(rawRequest)
 		var request jsonrpcv2.Request
 		if err := json.Unmarshal(rawRequest, &request); err != nil {
-			panic(err)
+			panic(fmt.Sprintf("Error parsing request: %s input %s", err, string(rawRequest)))
 		}
 		if request.Id != nil {
-			result, _ := instance.callRPCMethod(request.Method, request.Params)
+			result, _ := instance.callRPCMethod(request.Method, request.GetParams())
 			response := jsonrpcv2.Response{Id: request.Id, Error: nil, Result: result}
 			responseStr, err := json.Marshal(response)
 			if err != nil {
@@ -142,7 +142,7 @@ func (instance *Plugin[T]) Start() {
 			writer.Write(responseStr)
 			writer.Flush()
 		} else {
-			instance.handleNotification(request.Method, request.Params)
+			instance.handleNotification(request.Method, request.GetParams())
 		}
 	}
 }
