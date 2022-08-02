@@ -8,9 +8,9 @@ type getManifest[T any] struct{}
 
 func (instance *getManifest[T]) Call(plugin *Plugin[T], request map[string]any) (map[string]any, error) {
 	result := make(map[string]any)
-	result["options"] = comm.GenerateArray(plugin.Options)
-	result["rpcmethods"] = comm.GenerateArray(plugin.RpcMethods)
-	result["hooks"] = comm.GenerateArray(plugin.Hooks)
+	result["options"] = comm.GenerateArray(plugin.Options, map[string]bool{"getmanifest": true, "init": true})
+	result["rpcmethods"] = comm.GenerateArray(plugin.RpcMethods, map[string]bool{})
+	result["hooks"] = comm.GenerateArray(plugin.Hooks, map[string]bool{})
 	result["subscriptions"] = comm.GenerateKeyArray(plugin.Subscriptions)
 	// TODO: add notifications
 	result["notifications"] = make([]string, 0)

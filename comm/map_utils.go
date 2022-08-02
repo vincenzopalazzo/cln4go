@@ -1,9 +1,13 @@
 package comm
 
-func GenerateArray[V any](mapData map[string]V) []V {
+func GenerateArray[V any](mapData map[string]V, skipIfExist map[string]bool) []V {
 	v := make([]V, 0, len(mapData))
 
-	for _, value := range mapData {
+	for key, value := range mapData {
+		_, found := skipIfExist[key]
+		if found {
+			continue
+		}
 		v = append(v, value)
 	}
 	return v
