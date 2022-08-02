@@ -15,7 +15,7 @@ func (instance *getManifest[T]) Call(plugin *Plugin[T], request map[string]any) 
 	// TODO: add notifications
 	result["notifications"] = make([]string, 0)
 	result["dynamic"] = plugin.dynamic
-	// TODO: add featurebits
+	result["featurebits"] = plugin.FeatureBits
 	return result, nil
 }
 
