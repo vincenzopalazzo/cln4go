@@ -22,10 +22,15 @@ func (instance *getManifest[T]) Call(plugin *Plugin[T], request map[string]any) 
 type initMethod[T any] struct{}
 
 func (instance *initMethod[T]) Call(plugin *Plugin[T], request map[string]any) (map[string]any, error) {
-	//TODO: parse options
 	plugin.Configuration, _ = request["configuration"].(map[string]any)
+	opts := request["options"].(map[string]any)
+	for key, value := range opts {
+		plugin.Options[key].Value = &value
+	}
+
 	if plugin.onInit != nil {
 		return (*plugin.onInit)(plugin.State, request), nil
 	}
+
 	return map[string]any{}, nil
 }
