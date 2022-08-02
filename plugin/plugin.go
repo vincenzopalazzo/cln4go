@@ -16,6 +16,7 @@ type Plugin[T any] struct {
 	Hooks         map[string]*rpcHook[T]
 	Subscriptions map[string]*rpcNotification[T]
 	Options       map[string]*rpcOption
+	FeatureBits   map[string]any
 	dynamic       bool
 	Configuration map[string]any
 	onInit        *func(state *T, config map[string]any) map[string]any
