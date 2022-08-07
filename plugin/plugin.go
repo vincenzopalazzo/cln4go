@@ -10,7 +10,7 @@ import (
 )
 
 type Plugin[T any] struct {
-	State         *T
+	State         T
 	RpcMethods    map[string]*rpcMethod[T]
 	Notifications map[string]*rpcNotification[T]
 	Hooks         map[string]*rpcHook[T]
@@ -19,12 +19,12 @@ type Plugin[T any] struct {
 	FeatureBits   map[string]any
 	dynamic       bool
 	Configuration map[string]any
-	onInit        *func(state *T, config map[string]any) map[string]any
+	onInit        *func(state T, config map[string]any) map[string]any
 }
 
-func New[T any](state *T, dynamic bool, onInit *func(state *T, config map[string]any) map[string]any) *Plugin[T] {
+func New[T any](state *T, dynamic bool, onInit *func(state T, config map[string]any) map[string]any) *Plugin[T] {
 	return &Plugin[T]{
-		State:         state,
+		State:         *state,
 		RpcMethods:    make(map[string]*rpcMethod[T]),
 		Notifications: make(map[string]*rpcNotification[T]),
 		Options:       make(map[string]*rpcOption),
