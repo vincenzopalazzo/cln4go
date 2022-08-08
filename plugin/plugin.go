@@ -134,8 +134,13 @@ func (instance *Plugin[T]) Start() {
 			panic(fmt.Sprintf("Error parsing request: %s input %s", err, string(rawRequest)))
 		}
 		if request.Id != nil {
-			result, _ := instance.callRPCMethod(request.Method, request.GetParams())
-			response := jsonrpcv2.Response{Id: request.Id, Error: nil, Result: result}
+			result, err := instance.callRPCMethod(request.Method, request.GetParams())
+			var response jsonrpcv2.Response
+			if err != nil {
+				response = jsonrpcv2.Response{Id: request.Id, Error: map[string]any{"message": err, "code": -2}, Result: nil}
+			} else {
+				response = jsonrpcv2.Response{Id: request.Id, Error: nil, Result: result}
+			}
 			responseStr, err := json.Marshal(response)
 			if err != nil {
 				panic(err)
