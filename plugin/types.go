@@ -20,5 +20,5 @@ type rpcOption struct {
 	Default     string `json:"default"`
 	Description string `json:"description"`
 	Deprecated  bool   `json:"deprecated"`
-	Value       any   `json:"value"`
+	Value       any   `json:"-"`
 }
