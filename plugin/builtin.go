@@ -25,7 +25,7 @@ func (instance *initMethod[T]) Call(plugin *Plugin[T], request map[string]any) (
 	plugin.Configuration, _ = request["configuration"].(map[string]any)
 	opts := request["options"].(map[string]any)
 	for key, value := range opts {
-		plugin.Options[key].Value = &value
+		plugin.Options[key].Value = value
 	}
 
 	if plugin.onInit != nil {
