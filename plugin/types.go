@@ -7,7 +7,7 @@ package plugin
 // RPCCommand
 // FIXME: override the command pattern with the generic type alias when implemented
 type RPCCommand[T any] interface {
-	Call(*Plugin[T], map[string]any) (map[string]any, error)
+	Call(*Plugin[T], map[string]interface{}) (map[string]interface{}, error)
 }
 
 type RPCEvent[T any] interface {

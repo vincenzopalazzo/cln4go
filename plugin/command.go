@@ -8,7 +8,7 @@ type rpcMethod[T any] struct {
 	callback        RPCCommand[T] `json:"-"`
 }
 
-func (instance *rpcMethod[T]) Call(plugin *Plugin[T], request map[string]any) (map[string]any, error) {
+func (instance *rpcMethod[T]) Call(plugin *Plugin[T], request map[string]interface{}) (map[string]interface{}, error) {
 	return instance.callback.Call(plugin, request)
 }
 
