@@ -28,9 +28,9 @@ func (instance *initMethod[T]) Call(plugin *Plugin[T], request map[string]any) (
 		plugin.Options[key].Value = value
 	}
 
-	return plugin.onInit(plugin.State, plugin.Configuration), nil
+	return plugin.onInit(plugin, plugin.Configuration), nil
 }
 
-func DummyOnInit[T any](state T, conf map[string]any) map[string]any {
+func DummyOnInit[T any](plugin *Plugin[T], conf map[string]any) map[string]any {
 	return map[string]any{}
 }
