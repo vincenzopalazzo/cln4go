@@ -99,6 +99,26 @@ func (instance *Plugin[T]) handleNotification(onEvent string, request map[string
 	(*callback).Call(instance, request)
 }
 
+func (instance *Plugin[T]) Log(level string, message string) {
+	payload := map[string]any{
+		"level":   level,
+		"message": message,
+	}
+	var notifyRequest = jsonrpcv2.Request{
+		Id:      nil,
+		Jsonrpc: "2.0",
+		Method:  "log",
+		Params:  payload,
+	}
+	notifyStr, err := json.Marshal(notifyRequest)
+	if err != nil {
+		panic(err)
+	}
+	writer := writer.New(os.Stdout)
+	writer.Write(notifyStr)
+	writer.Flush()
+}
+
 func (instance *Plugin[T]) configurePlugin() {
 	instance.RegisterRPCMethod("getmanifest", "", "", &getManifest[T]{})
 	instance.RegisterRPCMethod("init", "", "", &initMethod[T]{})
@@ -137,12 +157,14 @@ func (instance *Plugin[T]) Start() {
 			result, err := instance.callRPCMethod(request.Method, request.GetParams())
 			var response jsonrpcv2.Response
 			if err != nil {
-				response = jsonrpcv2.Response{Id: request.Id, Error: map[string]any{"message": fmt.Sprintf("%s", err), "code": -2}, Result: nil}
+				instance.Log("broken", fmt.Sprintf("plugin generate an error: %s", err))
+				response = jsonrpcv2.Response{Id: request.Id, Error: map[string]any{"message": fmt.Sprintf("%s", err.Error()), "code": -2}, Result: nil}
 			} else {
 				response = jsonrpcv2.Response{Id: request.Id, Error: nil, Result: result}
 			}
 			responseStr, err := json.Marshal(response)
 			if err != nil {
+				instance.Log("broken", fmt.Sprintf("Error marshalling response: %s", err))
 				panic(err)
 			}
 			writer.Write(responseStr)
