@@ -19,10 +19,10 @@ type Plugin[T any] struct {
 	FeatureBits   map[string]any
 	dynamic       bool
 	Configuration map[string]any
-	onInit        func(state T, config map[string]any) map[string]any
+	onInit        func(plugin *Plugin[T], config map[string]any) map[string]any
 }
 
-func New[T any](state *T, dynamic bool, onInit func(state T, config map[string]any) map[string]any) *Plugin[T] {
+func New[T any](state *T, dynamic bool, onInit func(plugin *Plugin[T], config map[string]any) map[string]any) *Plugin[T] {
 	return &Plugin[T]{
 		State:         *state,
 		RpcMethods:    make(map[string]*rpcMethod[T]),
