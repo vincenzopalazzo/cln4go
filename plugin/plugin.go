@@ -137,7 +137,7 @@ func (instance *Plugin[T]) Start() {
 			result, err := instance.callRPCMethod(request.Method, request.GetParams())
 			var response jsonrpcv2.Response
 			if err != nil {
-				response = jsonrpcv2.Response{Id: request.Id, Error: map[string]any{"message": err, "code": -2}, Result: nil}
+				response = jsonrpcv2.Response{Id: request.Id, Error: map[string]any{"message": fmt.Sprintf("%s", err), "code": -2}, Result: nil}
 			} else {
 				response = jsonrpcv2.Response{Id: request.Id, Error: nil, Result: result}
 			}
