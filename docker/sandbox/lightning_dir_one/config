@@ -14,7 +14,6 @@ bitcoin-rpcport=18333
 log-level=debug
 
 plugin=/workdir/code/plugin/example/simple_plugin
-plugin=/workdir/code/plugin/example/simple_plugin_with_init
 
 log-file=/workdir/node_one.log
 allow-deprecated-apis=true
