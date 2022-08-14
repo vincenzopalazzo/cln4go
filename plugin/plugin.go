@@ -114,7 +114,7 @@ func (instance *Plugin[T]) Log(level string, message string) {
 	if err != nil {
 		panic(err)
 	}
-	writer := writer.New(os.Stdout)
+	writer := bufio.NewWriter(os.Stdout)
 	writer.Write(notifyStr)
 	writer.Flush()
 }
