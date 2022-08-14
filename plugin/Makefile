@@ -22,6 +22,7 @@ check_fmt:
 
 build:
 	$(CC) build -o example/simple_plugin example/simple_plugin.go
+	$(CC) build -o example/simple_plugin_with_init example/simple_plugin_with_init.go
 
 dep:
 	$(CC) mod vendor

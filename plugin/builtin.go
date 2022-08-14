@@ -29,8 +29,12 @@ func (instance *initMethod[T]) Call(plugin *Plugin[T], request map[string]any) (
 	}
 
 	if plugin.onInit != nil {
-		return (*plugin.onInit)(plugin.State, request), nil
+		return plugin.onInit(plugin.State, request), nil
 	}
 
 	return map[string]any{}, nil
+}
+
+func DummyOnInit[T any](state T, conf map[string]any) map[string]any {
+	return map[string]any{}
 }

@@ -28,12 +28,16 @@ func (instance *GetFooOption[PluginState]) Call(plugin *plugin.Plugin[PluginStat
 	return map[string]any{"message": BarValue}, nil
 }
 
+func onInit(state PluginState, conf map[string]any) map[string]any {
+	return map[string]any{}
+}
+
 func main() {
 	state := PluginState{}
-	plugin := plugin.New(&state, true, plugin.DummyOnInit[PluginState])
-	plugin.RegisterOption("foo", "string", "Hello Go", "An example of option", false)
-	plugin.RegisterRPCMethod("hello", "", "an example of rpc method", &Hello[PluginState]{})
-	plugin.RegisterRPCMethod("foo_bar", "", "an example of rpc method", &GetFooOption[PluginState]{})
+	plugin := plugin.New(&state, true, onInit)
+	plugin.RegisterOption("foov2", "string", "Hello Go", "An example of option", false)
+	plugin.RegisterRPCMethod("hellov2", "", "an example of rpc method", &Hello[PluginState]{})
+	plugin.RegisterRPCMethod("foo_barv2", "", "an example of rpc method", &GetFooOption[PluginState]{})
 	plugin.RegisterNotification("rpc_command", &OnRPCCommand[PluginState]{})
 	plugin.Start()
 }
