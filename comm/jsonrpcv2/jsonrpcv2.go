@@ -4,7 +4,7 @@ type Request struct {
 	Method  string `json:"method"`
 	Params  any    `json:"params"`
 	Jsonrpc string `json:"jsonrpc"`
-	Id      *int   `json:"id"`
+	Id      *int   `json:"id,omitempty"`
 }
 
 //TODO: core lightning should be consistent with the type that return
@@ -21,5 +21,5 @@ type Response struct {
 	Result  map[string]any `json:"result"`
 	Error   map[string]any `json:"error"`
 	Jsonrpc string         `json:"jsonrpc"`
-	Id      *int           `json:"id"`
+	Id      *int           `json:"id, omitempty"`
 }
