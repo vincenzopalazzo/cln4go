@@ -1,0 +1,16 @@
+{
+  "package_name": "plugin",
+  "version": "v0.0.1-beta.2",
+  "api": {
+    "name": "github",
+    "repository": "vincenzopalazzo/cln4go",
+    "branch": "main"
+  },
+  "generation_method": {
+    "name": "semver-v2",
+    "header_filter": true
+  },
+  "serialization_method": {
+    "name": "md"
+  }
+}
