@@ -14,6 +14,7 @@ type UnixRPC struct {
 	socket net.Conn
 }
 
+// NewUnixRPC creates a new UnixRPC instance.
 func NewUnix(path string) (*UnixRPC, error) {
 	socket, err := net.Dial("unix", path)
 	if err != nil {
@@ -34,6 +35,7 @@ func encodeToBytes(p any) []byte {
 	return buf.Bytes()
 }
 
+// Decode the Core lightning byte response to JsonRPC
 func decodeToResponse(s []byte) *jsonrpcv2.Response {
 	r := jsonrpcv2.Response{}
 	dec := json.NewDecoder(bytes.NewReader(s))

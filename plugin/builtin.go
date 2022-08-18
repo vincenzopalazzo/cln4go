@@ -4,6 +4,8 @@ import (
 	"github.com/vincenzopalazzo/cln4go/comm"
 )
 
+// GetManifest is a method to generate the manfest object needed by Core Damon
+// to register the plugin. https://lightning.readthedocs.io/PLUGINS.html
 type getManifest[T any] struct{}
 
 func (instance *getManifest[T]) Call(plugin *Plugin[T], request map[string]any) (map[string]any, error) {
@@ -19,6 +21,8 @@ func (instance *getManifest[T]) Call(plugin *Plugin[T], request map[string]any) 
 	return result, nil
 }
 
+// initMethod method is called by Core Damon after the command line options has been 
+// parsed and the plugin has been loaded.
 type initMethod[T any] struct{}
 
 func (instance *initMethod[T]) Call(plugin *Plugin[T], request map[string]any) (map[string]any, error) {
