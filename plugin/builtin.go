@@ -21,7 +21,7 @@ func (instance *getManifest[T]) Call(plugin *Plugin[T], request map[string]any) 
 	return result, nil
 }
 
-// initMethod method is called by Core Damon after the command line options has been 
+// initMethod method is called by Core Damon after the command line options has been
 // parsed and the plugin has been loaded.
 type initMethod[T any] struct{}
 
