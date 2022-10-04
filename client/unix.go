@@ -35,9 +35,8 @@ func encodeToBytes(p any) []byte {
 	return buf.Bytes()
 }
 
-// Decode the Core lightning byte response to JsonRPC
-func decodeToResponse(s []byte) *jsonrpcv2.Response {
-	r := jsonrpcv2.Response{}
+func decodeToResponse(s []byte) *jsonrpcv2.Response[*string] {
+	r := jsonrpcv2.Response[*string]{}
 	dec := json.NewDecoder(bytes.NewReader(s))
 	err := dec.Decode(&r)
 	if err != nil {
@@ -48,8 +47,13 @@ func decodeToResponse(s []byte) *jsonrpcv2.Response {
 
 func (instance UnixRPC) Call(method string, data map[string]any) (map[string]any, error) {
 	//change request to bytes
-	id := 12
-	request := jsonrpcv2.Request{Method: method, Params: data, Jsonrpc: "2.0", Id: &id}
+	id := "12"
+	request := jsonrpcv2.Request[*string]{
+		Method:  method,
+		Params:  data,
+		Jsonrpc: "2.0",
+		Id:      &id,
+	}
 	dataBytes := encodeToBytes(request)
 
 	//send data
