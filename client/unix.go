@@ -1,19 +1,18 @@
 package client
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"log"
 	"net"
 
+	"github.com/vincenzopalazzo/cln4go/comm/encoder"
 	"github.com/vincenzopalazzo/cln4go/comm/jsonrpcv2"
 	"github.com/vincenzopalazzo/cln4go/comm/tracer"
 )
 
 type UnixRPC struct {
-	socket net.Conn
-	tracer tracer.Tracer
+	socket  net.Conn
+	tracer  tracer.Tracer
+	encoder encoder.JSONEncoder
 }
 
 // NewUnixRPC creates a new UnixRPC instance.
@@ -23,8 +22,9 @@ func NewUnix(path string) (*UnixRPC, error) {
 		return nil, err
 	}
 	return &UnixRPC{
-		socket: socket,
-		tracer: nil,
+		socket:  socket,
+		tracer:  nil,
+		encoder: &encoder.GoEncoder{},
 	}, nil
 }
 
@@ -32,22 +32,23 @@ func (self *UnixRPC) SetTracer(tracer tracer.Tracer) {
 	self.tracer = tracer
 }
 
-func encodeToBytes(p any) []byte {
-	buf := bytes.Buffer{}
-	enc := json.NewEncoder(&buf)
-	err := enc.Encode(p)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return buf.Bytes()
+func (self *UnixRPC) SetEncoder(encoder encoder.JSONEncoder) {
+	self.encoder = encoder
 }
 
-func decodeToResponse(s []byte) *jsonrpcv2.Response[*string] {
-	r := jsonrpcv2.Response[*string]{}
-	dec := json.NewDecoder(bytes.NewReader(s))
-	err := dec.Decode(&r)
+func (self *UnixRPC) encodeToBytes(p any) []byte {
+	buf, err := self.encoder.EncodeToByte(p)
 	if err != nil {
-		log.Fatal(err)
+		self.tracer.Infof("%s", err)
+		panic(err)
+	}
+	return buf
+}
+
+func (self *UnixRPC) decodeToResponse(s []byte) *jsonrpcv2.Response[*string] {
+	r := jsonrpcv2.Response[*string]{}
+	if err := self.encoder.DecodeFromBytes(s, &r); err != nil {
+		self.tracer.Infof("%s", err)
 	}
 	return &r
 }
@@ -61,7 +62,7 @@ func (instance UnixRPC) Call(method string, data map[string]any) (map[string]any
 		Jsonrpc: "2.0",
 		Id:      &id,
 	}
-	dataBytes := encodeToBytes(request)
+	dataBytes := instance.encodeToBytes(request)
 
 	//send data
 	if _, err := instance.socket.Write(dataBytes); err != nil {
@@ -87,7 +88,7 @@ func (instance UnixRPC) Call(method string, data map[string]any) (map[string]any
 	}
 
 	//decode response
-	resp := decodeToResponse(buffer)
+	resp := instance.decodeToResponse(buffer)
 
 	if resp.Error != nil {
 		return nil, fmt.Errorf("RPC error code: %s and msg: %s", resp.Error["code"], resp.Error["message"])
