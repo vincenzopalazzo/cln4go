@@ -2,12 +2,12 @@ package plugin
 
 import (
 	"bufio"
-	"encoding/json"
 	"fmt"
 	"os"
 
 	"github.com/vincenzopalazzo/cln4go/comm/jsonrpcv2"
 	"github.com/vincenzopalazzo/cln4go/comm/tracer"
+	"github.com/vincenzopalazzo/cln4go/comm/encoder"
 )
 
 // Plugin is the base plugin structure.
@@ -24,6 +24,7 @@ type Plugin[T any] struct {
 	Configuration map[string]any
 	onInit        func(plugin *Plugin[T], config map[string]any) map[string]any
 	tracer        tracer.Tracer
+	encoder 		encoder.JSONEncoder
 }
 
 func New[T any](state *T, dynamic bool, onInit func(plugin *Plugin[T], config map[string]any) map[string]any) *Plugin[T] {
@@ -35,11 +36,16 @@ func New[T any](state *T, dynamic bool, onInit func(plugin *Plugin[T], config ma
 		dynamic:       dynamic,
 		onInit:        onInit,
 		tracer:        nil,
+		encoder: &encoder.GoEncoder{},
 	}
 }
 
 func (self *Plugin[T]) SetTracer(tracer tracer.Tracer) {
 	self.tracer = tracer
+}
+
+func (self *Plugin[T]) SetEncoder(encoder encoder.JSONEncoder) {
+	self.encoder = encoder
 }
 
 // Method to add a new rpc method to the plugin.
@@ -126,7 +132,7 @@ func (instance *Plugin[T]) Log(level string, message string) {
 		Method:  "log",
 		Params:  payload,
 	}
-	notifyStr, err := json.Marshal(notifyRequest)
+	notifyStr, err := instance.encoder.EncodeToByte(notifyRequest)
 	if err != nil {
 		panic(err)
 	}
@@ -167,7 +173,7 @@ func (instance *Plugin[T]) Start() {
 
 		debug.Write(rawRequest)
 		var request jsonrpcv2.Request[any]
-		if err := json.Unmarshal(rawRequest, &request); err != nil {
+		if err := instance.encoder.DecodeFromBytes(rawRequest, &request); err != nil {
 			panic(fmt.Sprintf("Error parsing request: %s input %s", err, string(rawRequest)))
 		}
 		if request.Id != nil {
@@ -179,7 +185,7 @@ func (instance *Plugin[T]) Start() {
 			} else {
 				response = jsonrpcv2.Response[any]{Id: request.Id, Error: nil, Result: result}
 			}
-			responseStr, err := json.Marshal(response)
+			responseStr, err := instance.encoder.EncodeToByte(response)
 			if err != nil {
 				instance.Log("broken", fmt.Sprintf("Error marshalling response: %s", err))
 				panic(err)
