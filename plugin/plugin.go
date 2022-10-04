@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/vincenzopalazzo/cln4go/comm/jsonrpcv2"
+	"github.com/vincenzopalazzo/cln4go/comm/tracer"
 )
 
 // Plugin is the base plugin structure.
@@ -22,6 +23,7 @@ type Plugin[T any] struct {
 	dynamic       bool
 	Configuration map[string]any
 	onInit        func(plugin *Plugin[T], config map[string]any) map[string]any
+	tracer        tracer.Tracer
 }
 
 func New[T any](state *T, dynamic bool, onInit func(plugin *Plugin[T], config map[string]any) map[string]any) *Plugin[T] {
@@ -32,7 +34,12 @@ func New[T any](state *T, dynamic bool, onInit func(plugin *Plugin[T], config ma
 		Options:       make(map[string]*rpcOption),
 		dynamic:       dynamic,
 		onInit:        onInit,
+		tracer:        nil,
 	}
+}
+
+func (self *Plugin[T]) SetTracer(tracer tracer.Tracer) {
+	self.tracer = tracer
 }
 
 // Method to add a new rpc method to the plugin.

@@ -8,10 +8,12 @@ import (
 	"net"
 
 	"github.com/vincenzopalazzo/cln4go/comm/jsonrpcv2"
+	"github.com/vincenzopalazzo/cln4go/comm/tracer"
 )
 
 type UnixRPC struct {
 	socket net.Conn
+	tracer tracer.Tracer
 }
 
 // NewUnixRPC creates a new UnixRPC instance.
@@ -22,7 +24,12 @@ func NewUnix(path string) (*UnixRPC, error) {
 	}
 	return &UnixRPC{
 		socket: socket,
+		tracer: nil,
 	}, nil
+}
+
+func (self *UnixRPC) SetTracer(tracer tracer.Tracer) {
+	self.tracer = tracer
 }
 
 func encodeToBytes(p any) []byte {
