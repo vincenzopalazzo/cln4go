@@ -1,3 +1,10 @@
+# v0.0.1-beta.4
+
+## Fixed
+- use the interface for the state to access struct filed ([commit](https://github.com/vincenzopalazzo/cln4go/commit/39fb038b177a560c5e9f9b33954febbb481cc29f)). @vincenzopalazzo 05-10-2022
+- fix the wrong state type from *T to T ([commit](https://github.com/vincenzopalazzo/cln4go/commit/1a2cad823684ae6266ae737f94eec38074f8e5b1)). @vincenzopalazzo 05-10-2022
+
+
 # v0.0.1-beta.3
 
 ## Added
