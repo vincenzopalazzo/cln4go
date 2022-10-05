@@ -40,11 +40,16 @@ func TestOptionValueExist(t *testing.T) {
 	}
 
 	message, found := response["message"]
+	name, found := response["name"]
 	if !found {
-		t.Error("The message is not found")
+		t.Error("The message or name not found in the response")
 	}
 
 	if message != "Hello Go" {
 		t.Errorf("message received %s different from expected %s", message, "Hello Go")
+	}
+
+	if name != "cln4go-opt" {
+		t.Errorf("name received %s different from expected %s", name, "cn4go-opt")
 	}
 }
