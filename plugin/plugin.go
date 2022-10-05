@@ -27,9 +27,11 @@ type Plugin[T any] struct {
 	encoder       encoder.JSONEncoder
 }
 
-func New[T any](state *T, dynamic bool, onInit func(plugin *Plugin[T], config map[string]any) map[string]any) *Plugin[T] {
+
+// FIXME: try to pass the pointer of the state to avoid the double copy here!
+func New[T any](state T, dynamic bool, onInit func(plugin *Plugin[T], config map[string]any) map[string]any) *Plugin[T] {
 	return &Plugin[T]{
-		State:         *state,
+		State:         state,
 		RpcMethods:    make(map[string]*rpcMethod[T]),
 		Notifications: make(map[string]*rpcNotification[T]),
 		Options:       make(map[string]*rpcOption),
