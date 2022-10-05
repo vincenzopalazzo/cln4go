@@ -1,3 +1,9 @@
+# v0.0.1-beta.3
+
+## Added
+- add json encoder implementation ([commit](https://github.com/vincenzopalazzo/cln4go/commit/cc8bea295b3ebbdecb129c7674e4fbef5bdeb512)). @vincenzopalazzo 04-10-2022
+
+
 # v0.0.1-beta.2
 
 ## Fixed

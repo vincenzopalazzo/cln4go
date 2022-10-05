@@ -1,3 +1,9 @@
+# v0.0.1-beta.3
+
+## Added
+- implement encoder interface and support go encoder ([commit](https://github.com/vincenzopalazzo/cln4go/commit/64871a56bf696558548a18cbb033ac6856cdad8f)). @vincenzopalazzo 04-10-2022
+
+
 # v0.0.1-beta.2
 
 ## Fixed

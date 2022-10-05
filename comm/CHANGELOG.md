@@ -1,3 +1,10 @@
+# v0.0.1-beta.3
+
+## Added
+- add encoder interface and go impl ([commit](https://github.com/vincenzopalazzo/cln4go/commit/578de3943498f0b4ff2e1a49378794062d06abcf)). @vincenzopalazzo 04-10-2022
+- add tracer interface ([commit](https://github.com/vincenzopalazzo/cln4go/commit/7d2c89e56c94d25c3ca97a26ccbd2d0c76b24f58)). @vincenzopalazzo 04-10-2022
+
+
 # v0.0.1-beta.2
 
 ## Fixed
