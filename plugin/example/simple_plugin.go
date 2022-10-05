@@ -4,7 +4,9 @@ import (
 	"github.com/vincenzopalazzo/cln4go/plugin"
 )
 
-type PluginState struct{}
+type PluginState struct {
+	Name string
+}
 
 type OnRPCCommand[T PluginState] struct{}
 
@@ -29,8 +31,10 @@ func (instance *GetFooOption[PluginState]) Call(plugin *plugin.Plugin[PluginStat
 }
 
 func main() {
-	state := PluginState{}
-	plugin := plugin.New(&state, true, plugin.DummyOnInit[PluginState])
+	state := PluginState{
+		Name: "cln4go",
+	}
+	plugin := plugin.New(state, true, plugin.DummyOnInit[PluginState])
 	plugin.RegisterOption("foo", "string", "Hello Go", "An example of option", false)
 	plugin.RegisterRPCMethod("hello", "", "an example of rpc method", &Hello[PluginState]{})
 	plugin.RegisterRPCMethod("foo_bar", "", "an example of rpc method", &GetFooOption[PluginState]{})
