@@ -27,7 +27,6 @@ type Plugin[T any] struct {
 	encoder       encoder.JSONEncoder
 }
 
-
 // FIXME: try to pass the pointer of the state to avoid the double copy here!
 func New[T any](state T, dynamic bool, onInit func(plugin *Plugin[T], config map[string]any) map[string]any) *Plugin[T] {
 	return &Plugin[T]{
@@ -48,6 +47,10 @@ func (self *Plugin[T]) SetTracer(tracer tracer.Tracer) {
 
 func (self *Plugin[T]) SetEncoder(encoder encoder.JSONEncoder) {
 	self.encoder = encoder
+}
+
+func (self *Plugin[T]) GetState() T {
+	return self.State
 }
 
 // Method to add a new rpc method to the plugin.
