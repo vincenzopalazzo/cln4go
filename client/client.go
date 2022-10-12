@@ -11,8 +11,8 @@ type Client interface {
 }
 
 // Call - Generic call for perform a RPC call.
-func Call[C Client, Req any, Resp any](client *C, method string, payload Req) (*Resp, error) {
-	result, err := (*client).Call(method, fromTypeToMap(payload))
+func Call[C Client, Req any, Resp any](client C, method string, payload Req) (*Resp, error) {
+	result, err := client.Call(method, fromTypeToMap(payload))
 	if err != nil {
 		return nil, err
 	}
