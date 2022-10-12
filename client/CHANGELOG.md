@@ -1,3 +1,9 @@
+# v0.0.1-beta.4
+
+## Fixed
+- fix type declaration in Call, remove pointer type ([commit](https://github.com/vincenzopalazzo/cln4go/commit/5bc91a073182e18b0bcdc87228cc8fdbf0e1c835)). @vincenzopalazzo 12-10-2022
+
+
 # v0.0.1-beta.3
 
 ## Added
