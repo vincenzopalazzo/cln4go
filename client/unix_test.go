@@ -6,12 +6,6 @@ import (
 	"testing"
 )
 
-type GetInfo struct {
-	Id string `json:"id"`
-}
-
-type MapReq = map[string]any
-
 func TestUnixCallOne(t *testing.T) {
 	path := os.Getenv("CLN_UNIX_SOCKET")
 	if path == "" {
@@ -49,7 +43,7 @@ func TestUnixCallOneTyped(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	response, err := Call[UnixRPC, MapReq, GetInfo](client, "getinfo", make(map[string]any, 0))
+	response, err := Call[*UnixRPC, MapReq, GetInfo](client, "getinfo", make(map[string]any, 0))
 
 	if err != nil {
 		panic(err)
