@@ -2,7 +2,6 @@ package client
 
 import (
 	"encoding/json"
-	"reflect"
 )
 
 // Client - Common interface for all the client supported by the library.
@@ -40,16 +39,9 @@ func PlainCall[C Client](client C, method string, payload map[string]any) (map[s
 	return result, nil
 }
 
-// FIXME: move in https://github.com/LNOpenMetrics/lnmetrics.utils
 func fromTypeToMap(typeInstance any) map[string]any {
-	if reflect.ValueOf(typeInstance).Kind() != reflect.Struct {
-		return typeInstance.(map[string]any)
-	}
-	mapp := make(map[string]any)
-	elem := reflect.ValueOf(&typeInstance).Elem()
-	relType := elem.Type()
-	for i := 0; i < relType.NumField(); i++ {
-		mapp[relType.Field(i).Name] = elem.Field(i).Interface()
-	}
-	return mapp
+	var res map[string]any
+	str, _ := json.Marshal(typeInstance)
+	_ = json.Unmarshal(str, &res)
+	return res
 }
