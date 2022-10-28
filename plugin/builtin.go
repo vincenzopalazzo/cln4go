@@ -1,6 +1,8 @@
 package plugin
 
 import (
+	"fmt"
+
 	"github.com/vincenzopalazzo/cln4go/comm"
 )
 
@@ -27,8 +29,9 @@ type initMethod[T any] struct{}
 
 func (instance *initMethod[T]) Call(plugin *Plugin[T], request map[string]any) (map[string]any, error) {
 	plugin.Configuration, _ = request["configuration"].(map[string]any)
-	opts := request["options"].(map[string]any)
-	for key, value := range opts {
+	opts, _ := request["options"]
+	for key, value := range opts.(map[string]any) {
+		plugin.Log("debug", fmt.Sprintf("opt with key %s = %s", key, value))
 		plugin.Options[key].Value = value
 	}
 
