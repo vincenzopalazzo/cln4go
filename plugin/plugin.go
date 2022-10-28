@@ -53,6 +53,26 @@ func (self *Plugin[T]) GetState() T {
 	return self.State
 }
 
+func (self *Plugin[T]) Encode(obj any) (map[string]any, error) {
+	jsonBytes, err := self.encoder.EncodeToByte(obj)
+	if err != nil {
+		return nil, err
+	}
+	var res map[string]any
+	if err := self.encoder.DecodeFromBytes(jsonBytes, &res); err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func (self *Plugin[T]) Decode(payload map[string]any, destination any) error {
+	bytes, err := self.encoder.EncodeToByte(payload)
+	if err != nil {
+		return err
+	}
+	return self.encoder.DecodeFromBytes(bytes, destination)
+}
+
 // Method to add a new rpc method to the plugin.
 func (instance *Plugin[T]) RegisterRPCMethod(name string, usage string, description string, callback RPCCommand[T]) {
 	instance.RpcMethods[name] = &rpcMethod[T]{
