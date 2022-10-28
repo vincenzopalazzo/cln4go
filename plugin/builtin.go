@@ -1,8 +1,6 @@
 package plugin
 
 import (
-	"fmt"
-
 	"github.com/vincenzopalazzo/cln4go/comm"
 )
 
@@ -20,6 +18,7 @@ func (instance *getManifest[T]) Call(plugin *Plugin[T], request map[string]any) 
 	result["notifications"] = make([]string, 0)
 	result["dynamic"] = plugin.dynamic
 	result["featurebits"] = plugin.FeatureBits
+
 	return result, nil
 }
 
@@ -31,7 +30,6 @@ func (instance *initMethod[T]) Call(plugin *Plugin[T], request map[string]any) (
 	plugin.Configuration, _ = request["configuration"].(map[string]any)
 	opts, _ := request["options"]
 	for key, value := range opts.(map[string]any) {
-		plugin.Log("debug", fmt.Sprintf("opt with key %s = %s", key, value))
 		plugin.Options[key].Value = value
 	}
 
