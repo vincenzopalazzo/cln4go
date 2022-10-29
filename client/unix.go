@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"math/rand"
 	"net"
 
 	"github.com/vincenzopalazzo/cln4go/comm/encoder"
@@ -47,15 +48,18 @@ func (self *UnixRPC) encodeToBytes(p any) []byte {
 
 func (self *UnixRPC) decodeToResponse(s []byte) *jsonrpcv2.Response[*string] {
 	r := jsonrpcv2.Response[*string]{}
+	if s == nil || len(s) == 0 {
+		return &r
+	}
 	if err := self.encoder.DecodeFromBytes(s, &r); err != nil {
 		self.tracer.Infof("%s", err)
 	}
 	return &r
 }
 
+// Call invoke a JSON RPC 2.0 method call by choosing a random id from 0 to 10000
 func (instance UnixRPC) Call(method string, data map[string]any) (map[string]any, error) {
-	//change request to bytes
-	id := "12"
+	id := fmt.Sprintf("%d", rand.Intn(10000))
 	request := jsonrpcv2.Request[*string]{
 		Method:  method,
 		Params:  data,
@@ -69,8 +73,6 @@ func (instance UnixRPC) Call(method string, data map[string]any) (map[string]any
 		return nil, err
 	}
 
-	//read response
-	// FIXME: move in https://github.com/LNOpenMetrics/lnmetrics.utils
 	buffSize := 1024
 	buffer := make([]byte, 0)
 	for {
