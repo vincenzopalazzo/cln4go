@@ -25,7 +25,7 @@ func NewUnix(path string) (*UnixRPC, error) {
 	}
 	return &UnixRPC{
 		socket:  socket,
-		tracer:  nil,
+		tracer:  &tracer.DummyTracer{},
 		encoder: &encoder.GoEncoder{},
 	}, nil
 }
@@ -76,8 +76,9 @@ func (instance UnixRPC) Call(method string, data map[string]any) (map[string]any
 	}
 
 	buffSize := 1024
-	buffer := []byte{}
+	buffer := make([]byte, 0)
 	for {
+		instance.tracer.Info("cln4go: read chunk")
 		recvData := make([]byte, buffSize)
 		bytesResp1, err := instance.socket.Read(recvData[:])
 
@@ -89,6 +90,7 @@ func (instance UnixRPC) Call(method string, data map[string]any) (map[string]any
 			return nil, err
 		}
 
+		instance.tracer.Infof("cln4go: reading %d", bytesResp1)
 		buffer = append(buffer, recvData[:bytesResp1]...)
 
 		if bytesResp1 < buffSize {
