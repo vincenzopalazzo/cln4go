@@ -12,6 +12,7 @@ type GetInfo struct {
 
 type MapReq = map[string]any
 
+
 func TestGenericCallOne(t *testing.T) {
 	path := os.Getenv("CLN_UNIX_SOCKET")
 	if path == "" {
@@ -23,6 +24,7 @@ func TestGenericCallOne(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
+	client.SetTracer(&TestTracer{})
 	response, err := Call[*UnixRPC, MapReq, GetInfo](client, "getinfo", make(map[string]interface{}))
 
 	if err != nil {
