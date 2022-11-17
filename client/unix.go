@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"io"
 	"math/rand"
 	"net"
 
@@ -51,6 +52,7 @@ func (self *UnixRPC) decodeToResponse(s []byte) *jsonrpcv2.Response[*string] {
 	if s == nil || len(s) == 0 {
 		return &r
 	}
+	self.tracer.Infof("cln4go: buffer pre dencoding %s", string(s))
 	if err := self.encoder.DecodeFromBytes(s, &r); err != nil {
 		self.tracer.Infof("%s", err)
 	}
@@ -74,22 +76,25 @@ func (instance UnixRPC) Call(method string, data map[string]any) (map[string]any
 	}
 
 	buffSize := 1024
-	buffer := make([]byte, 0)
+	buffer := []byte{}
 	for {
 		recvData := make([]byte, buffSize)
 		bytesResp1, err := instance.socket.Read(recvData[:])
 
 		if err != nil {
+			if err == io.EOF {
+				break
+			}
+
 			return nil, err
 		}
+
 		buffer = append(buffer, recvData[:bytesResp1]...)
 
 		if bytesResp1 < buffSize {
 			break
 		}
 	}
-
-	//decode response
 	resp := instance.decodeToResponse(buffer)
 
 	if resp.Error != nil {
