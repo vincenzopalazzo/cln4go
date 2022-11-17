@@ -49,7 +49,7 @@ func (self *UnixRPC) encodeToBytes(p any) []byte {
 
 func (self *UnixRPC) decodeToResponse(s []byte) *jsonrpcv2.Response[*string] {
 	r := jsonrpcv2.Response[*string]{}
-	if s == nil || len(s) == 0 {
+	if len(s) == 0 {
 		return &r
 	}
 	self.tracer.Infof("cln4go: buffer pre dencoding %s", string(s))
