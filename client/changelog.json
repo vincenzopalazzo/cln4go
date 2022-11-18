@@ -1,6 +1,6 @@
 {
   "package_name": "client",
-  "version": "v0.0.1-beta.4",
+  "version": "v0.0.1-beta.5",
   "api": {
     "name": "github",
     "repository": "vincenzopalazzo/cln4go",
