@@ -38,7 +38,7 @@ func (instance *GetFooOption[IPluginState]) Call(plugin *plugin.Plugin[IPluginSt
 	BarValue, state := plugin.GetOpt("foo")
 	plugin.State.SetName("cln4go-opt")
 
-	if state != true {
+	if !state {
 		BarValue = ""
 	}
 	return map[string]any{"message": BarValue, "name": plugin.GetState().GetName()}, nil

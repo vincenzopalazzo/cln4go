@@ -29,5 +29,5 @@ type Response[I RequestId] struct {
 	Result  map[string]any `json:"result"`
 	Error   map[string]any `json:"error"`
 	Jsonrpc string         `json:"jsonrpc"`
-	Id      I              `json:"id, omitempty"`
+	Id      I `json:"id,omitempty"`
 }

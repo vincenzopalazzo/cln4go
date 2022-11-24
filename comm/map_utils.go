@@ -20,7 +20,7 @@ func GenerateArray[V any](mapData map[string]V, skipIfExist map[string]bool) []V
 func GenerateKeyArray[V any](mapData map[string]V) []string {
 	k := make([]string, 0, len(mapData))
 
-	for key, _ := range mapData {
+	for key := range mapData {
 		k = append(k, key)
 	}
 

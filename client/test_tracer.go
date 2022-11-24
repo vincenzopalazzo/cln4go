@@ -2,14 +2,11 @@ package client
 
 import (
 	"log"
-	"testing"
 
 	"github.com/vincenzopalazzo/cln4go/comm/tracer"
 )
 
-type TestTracer struct {
-	t *testing.T
-}
+type TestTracer struct { }
 
 func (self *TestTracer) Log(level tracer.TracerLevel, msg string) {}
 

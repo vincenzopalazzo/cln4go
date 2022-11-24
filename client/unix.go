@@ -3,7 +3,6 @@ package client
 import (
 	"bufio"
 	"fmt"
-	"io"
 	"math/rand"
 	"net"
 
@@ -77,8 +76,7 @@ func (instance UnixRPC) Call(method string, data map[string]any) (map[string]any
 	}
 
 	buffer := ""
-	reader := bufio.NewReader(instance.socket)
-	scanner := bufio.Scanner(*reader)
+	scanner := bufio.NewScanner(instance.socket)
 	for scanner.Scan() {
 		if line := scanner.Text(); len(line) > 0 {
 			buffer += line

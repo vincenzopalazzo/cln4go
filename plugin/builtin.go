@@ -28,7 +28,7 @@ type initMethod[T any] struct{}
 
 func (instance *initMethod[T]) Call(plugin *Plugin[T], request map[string]any) (map[string]any, error) {
 	plugin.Configuration, _ = request["configuration"].(map[string]any)
-	opts, _ := request["options"]
+	opts := request["options"]
 	for key, value := range opts.(map[string]any) {
 		plugin.Options[key].Value = value
 	}

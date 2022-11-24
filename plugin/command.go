@@ -29,5 +29,7 @@ type rpcHook[T any] struct {
 }
 
 func (instance *rpcHook[T]) Call(plugin *Plugin[T], request map[string]any) {
-	instance.callback.Call(plugin, request)
+	if _, err := instance.callback.Call(plugin, request); err != nil {
+		plugin.tracer.Infof("%s", err)
+	}
 }
