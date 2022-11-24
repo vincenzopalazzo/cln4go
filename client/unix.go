@@ -75,17 +75,21 @@ func (instance UnixRPC) Call(method string, data map[string]any) (map[string]any
 		return nil, err
 	}
 
-	buffer := ""
+	buffer := []byte{}
 	scanner := bufio.NewScanner(instance.socket)
 	for scanner.Scan() {
-		if line := scanner.Text(); len(line) > 0 {
-			buffer += line
+		if line := scanner.Bytes(); len(line) > 0 {
+			instance.tracer.Info(string(line))
+			buffer = append(buffer, line...)
+		} else {
+			break
 		}
 	}
-	resp := instance.decodeToResponse([]byte(buffer))
+	resp := instance.decodeToResponse(buffer)
 
 	if resp.Error != nil {
-		return nil, fmt.Errorf("RPC error code: %s and msg: %s", resp.Error["code"], resp.Error["message"])
+		code := int64(resp.Error["code"].(float64))
+		return nil, fmt.Errorf("RPC error code: %d and msg: %s", code, resp.Error["message"])
 	}
 
 	return resp.Result, nil
