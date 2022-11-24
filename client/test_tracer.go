@@ -8,7 +8,7 @@ import (
 )
 
 type TestTracer struct {
-    t *testing.T
+	t *testing.T
 }
 
 func (self *TestTracer) Log(level tracer.TracerLevel, msg string) {}
