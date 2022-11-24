@@ -162,7 +162,9 @@ func (instance *Plugin[T]) Log(level string, message string) {
 		panic(err)
 	}
 	writer := bufio.NewWriter(os.Stdout)
-	writer.Write(notifyStr)
+	if _, err := writer.Write(notifyStr); err != nil {
+		instance.tracer.Infof("%s", err)
+	}
 	writer.Flush()
 }
 
@@ -176,7 +178,6 @@ func (instance *Plugin[T]) Start() {
 	instance.configurePlugin()
 	reader := bufio.NewReader(os.Stdin)
 	writer := bufio.NewWriter(os.Stdout)
-	debug := bufio.NewWriter(os.Stderr)
 	for {
 		//read response
 		// FIXME: move in https://github.com/LNOpenMetrics/lnmetrics.utils
@@ -196,7 +197,6 @@ func (instance *Plugin[T]) Start() {
 			}
 		}
 
-		debug.Write(rawRequest)
 		var request jsonrpcv2.Request[any]
 		if err := instance.encoder.DecodeFromBytes(rawRequest, &request); err != nil {
 			panic(fmt.Sprintf("Error parsing request: %s input %s", err, string(rawRequest)))
@@ -206,7 +206,7 @@ func (instance *Plugin[T]) Start() {
 			var response jsonrpcv2.Response[any]
 			if err != nil {
 				instance.Log("broken", fmt.Sprintf("plugin generate an error: %s", err))
-				response = jsonrpcv2.Response[any]{Id: request.Id, Error: map[string]any{"message": fmt.Sprintf("%s", err.Error()), "code": -2}, Result: nil}
+				response = jsonrpcv2.Response[any]{Id: request.Id, Error: map[string]any{"message": err.Error(), "code": -2}, Result: nil}
 			} else {
 				response = jsonrpcv2.Response[any]{Id: request.Id, Error: nil, Result: result}
 			}
@@ -215,7 +215,9 @@ func (instance *Plugin[T]) Start() {
 				instance.Log("broken", fmt.Sprintf("Error marshalling response: %s", err))
 				panic(err)
 			}
-			writer.Write(responseStr)
+			if _, err := writer.Write(responseStr); err != nil {
+				instance.tracer.Infof("%s", err)
+			}
 			writer.Flush()
 		} else {
 			instance.handleNotification(request.Method, request.GetParams())

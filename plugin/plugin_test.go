@@ -39,7 +39,7 @@ func TestOptionValueExist(t *testing.T) {
 		panic(err)
 	}
 
-	message, found := response["message"]
+	message := response["message"]
 	name, found := response["name"]
 	if !found {
 		t.Error("The message or name not found in the response")
