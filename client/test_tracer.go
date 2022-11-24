@@ -6,7 +6,7 @@ import (
 	"github.com/vincenzopalazzo/cln4go/comm/tracer"
 )
 
-type TestTracer struct { }
+type TestTracer struct{}
 
 func (self *TestTracer) Log(level tracer.TracerLevel, msg string) {}
 
