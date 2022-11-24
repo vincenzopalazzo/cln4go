@@ -1,6 +1,7 @@
 package client
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"math/rand"
@@ -75,29 +76,15 @@ func (instance UnixRPC) Call(method string, data map[string]any) (map[string]any
 		return nil, err
 	}
 
-	buffSize := 1024
-	buffer := make([]byte, 0)
-	for {
-		instance.tracer.Info("cln4go: read chunk")
-		recvData := make([]byte, buffSize)
-		bytesResp1, err := instance.socket.Read(recvData[:])
-
-		if err != nil {
-			if err == io.EOF {
-				break
-			}
-
-			return nil, err
-		}
-
-		instance.tracer.Infof("cln4go: reading %d", bytesResp1)
-		buffer = append(buffer, recvData[:bytesResp1]...)
-
-		if bytesResp1 < buffSize {
-			break
+	buffer := ""
+	reader := bufio.NewReader(instance.socket)
+	scanner := bufio.Scanner(*reader)
+	for scanner.Scan() {
+		if line := scanner.Text(); len(line) > 0 {
+			buffer += line
 		}
 	}
-	resp := instance.decodeToResponse(buffer)
+	resp := instance.decodeToResponse([]byte(buffer))
 
 	if resp.Error != nil {
 		return nil, fmt.Errorf("RPC error code: %s and msg: %s", resp.Error["code"], resp.Error["message"])

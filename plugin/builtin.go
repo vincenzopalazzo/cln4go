@@ -14,7 +14,7 @@ func (instance *getManifest[T]) Call(plugin *Plugin[T], request map[string]any) 
 	result["rpcmethods"] = comm.GenerateArray(plugin.RpcMethods, map[string]bool{"getmanifest": true, "init": true})
 	result["hooks"] = comm.GenerateArray(plugin.Hooks, map[string]bool{})
 	result["subscriptions"] = comm.GenerateKeyArray(plugin.Subscriptions)
-	// TODO: add notifications
+	// FIXME: add notifications
 	result["notifications"] = make([]string, 0)
 	result["dynamic"] = plugin.dynamic
 	result["featurebits"] = plugin.FeatureBits

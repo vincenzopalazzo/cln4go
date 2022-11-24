@@ -12,7 +12,6 @@ type GetInfo struct {
 
 type MapReq = map[string]any
 
-
 func TestGenericCallOne(t *testing.T) {
 	path := os.Getenv("CLN_UNIX_SOCKET")
 	if path == "" {
