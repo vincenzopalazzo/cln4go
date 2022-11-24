@@ -1,3 +1,9 @@
+# v0.0.1-beta.6
+
+## Fixed
+- make go safe with addition lint check ([commit](https://github.com/vincenzopalazzo/cln4go/commit/1ccd1408b365408bc46e5e2898777f1d08bb8690)). @vincenzopalazzo 24-11-2022
+- fix how reading from a unix socket ([commit](https://github.com/vincenzopalazzo/cln4go/commit/bf87d4f6feceec7ce0e6489970c481a029de15ff)). @vincenzopalazzo 24-11-2022
+
 # v0.0.1-beta.5
 
 ## Fixed
