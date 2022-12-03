@@ -41,7 +41,7 @@ func (self *UnixRPC) SetEncoder(encoder encoder.JSONEncoder) {
 func (self *UnixRPC) encodeToBytes(p any) []byte {
 	buf, err := self.encoder.EncodeToByte(p)
 	if err != nil {
-		self.tracer.Infof("%s", err)
+		self.tracer.Tracef("%s", err)
 		panic(err)
 	}
 	return buf
@@ -52,9 +52,9 @@ func (self *UnixRPC) decodeToResponse(s []byte) (*jsonrpcv2.Response[*string], e
 	if len(s) == 0 {
 		return &r, nil
 	}
-	self.tracer.Infof("cln4go: buffer pre dencoding %s", string(s))
+	self.tracer.Tracef("cln4go: buffer pre dencoding %s", string(s))
 	if err := self.encoder.DecodeFromBytes(s, &r); err != nil {
-		self.tracer.Infof("%s", err)
+		self.tracer.Tracef("%s", err)
 		return nil, err
 	}
 	return &r, nil
@@ -89,7 +89,7 @@ func (instance UnixRPC) Call(method string, data map[string]any) (map[string]any
 	scanner.Buffer(buffer, bufio.MaxScanTokenSize*4)
 	for scanner.Scan() {
 		if line := scanner.Bytes(); len(line) > 0 {
-			instance.tracer.Info(string(line))
+			instance.tracer.Trace(string(line))
 			buffer = append(buffer, line...)
 		} else {
 			break
