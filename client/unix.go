@@ -47,20 +47,22 @@ func (self *UnixRPC) encodeToBytes(p any) []byte {
 	return buf
 }
 
-func (self *UnixRPC) decodeToResponse(s []byte) *jsonrpcv2.Response[*string] {
+func (self *UnixRPC) decodeToResponse(s []byte) (*jsonrpcv2.Response[*string], error) {
 	r := jsonrpcv2.Response[*string]{}
 	if len(s) == 0 {
-		return &r
+		return &r, nil
 	}
 	self.tracer.Infof("cln4go: buffer pre dencoding %s", string(s))
 	if err := self.encoder.DecodeFromBytes(s, &r); err != nil {
 		self.tracer.Infof("%s", err)
+		return nil, err
 	}
-	return &r
+	return &r, nil
 }
 
 // Call invoke a JSON RPC 2.0 method call by choosing a random id from 0 to 10000
 func (instance UnixRPC) Call(method string, data map[string]any) (map[string]any, error) {
+	// FIXME: in cln the semantics of the id is changed, please update it
 	id := fmt.Sprintf("%d", rand.Intn(10000))
 	request := jsonrpcv2.Request[*string]{
 		Method:  method,
@@ -77,15 +79,19 @@ func (instance UnixRPC) Call(method string, data map[string]any) (map[string]any
 
 	buffer := []byte{}
 	scanner := bufio.NewScanner(instance.socket)
+	var resp jsonrpcv2.Response[*string]
 	for scanner.Scan() {
-		if line := scanner.Bytes(); len(line) > 0 {
-			instance.tracer.Info(string(line))
-			buffer = append(buffer, line...)
-		} else {
+		line := scanner.Bytes()
+		instance.tracer.Info(string(line))
+		buffer = append(buffer, line...)
+
+		// FIXME: there is any way to easly read from a stream
+		// till a string token like `\n\n`?
+		if tmp, err := instance.decodeToResponse(buffer); err == nil {
+			resp = *tmp
 			break
 		}
 	}
-	resp := instance.decodeToResponse(buffer)
 
 	if resp.Error != nil {
 		code := int64(resp.Error["code"].(float64))
