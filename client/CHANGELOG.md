@@ -1,3 +1,8 @@
+# v0.0.1-beta.7
+
+## Fixed
+- partial reading due reach of the max size buff ([commit](https://github.com/vincenzopalazzo/cln4go/commit/f94fa8209ff440c74303310f9079d5152391588f)). @vincenzopalazzo 03-12-2022
+
 # v0.0.1-beta.6
 
 ## Fixed

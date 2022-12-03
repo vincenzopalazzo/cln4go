@@ -1,6 +1,6 @@
 {
   "package_name": "common",
-  "version": "v0.0.1-beta.3",
+  "version": "v0.0.1-beta.4",
   "api": {
     "name": "github",
     "repository": "vincenzopalazzo/cln4go",

@@ -1,3 +1,9 @@
+# v0.0.1-beta.4
+
+## Added
+- add tracer interface ([commit](https://github.com/vincenzopalazzo/cln4go/commit/7d2c89e56c94d25c3ca97a26ccbd2d0c76b24f58)). @vincenzopalazzo 04-10-2022
+
+
 # v0.0.1-beta.3
 
 ## Added
