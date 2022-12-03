@@ -19,3 +19,11 @@ func (self *TestTracer) Info(msg string) {
 func (self *TestTracer) Infof(msg string, args ...any) {
 	log.Printf(msg, args...)
 }
+
+func (self *TestTracer) Trace(msg string) {
+	log.Println(msg)
+}
+
+func (self *TestTracer) Tracef(msg string, args ...any) {
+	log.Printf(msg, args...)
+}
