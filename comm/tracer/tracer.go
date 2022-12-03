@@ -25,5 +25,9 @@ type Tracer interface {
 	/// Info log message at info level with fmt method
 	Infof(msg string, args ...any)
 
-	// FIXME: support other trace method
+	/// Trace log message at trace level
+	Trace(msg string)
+
+	/// Log message at trace level with fmt method
+	Tracef(msg string, args ...any)
 }
