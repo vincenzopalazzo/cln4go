@@ -1,3 +1,9 @@
+# v0.0.1-beta.8
+
+## Fixed
+- impl the scanner with dynamic buffer ([commit](https://github.com/vincenzopalazzo/cln4go/commit/bd8a8907f39cec7143f0028c00471cab5228bc82)). @vincenzopalazzo 04-12-2022
+
+
 # v0.0.1-beta.7
 
 ## Fixed
