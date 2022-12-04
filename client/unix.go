@@ -53,7 +53,6 @@ func (self *UnixRPC) decodeToResponse(s []byte) (*jsonrpcv2.Response[*string], e
 	if len(s) == 0 {
 		return &r, nil
 	}
-	self.tracer.Tracef("cln4go: buffer pre dencoding %s", string(s))
 	if err := self.encoder.DecodeFromBytes(s, &r); err != nil {
 		self.tracer.Tracef("%s", err)
 		return nil, err
@@ -88,7 +87,6 @@ func (instance UnixRPC) Call(method string, data map[string]any) (map[string]any
 
 	resp, err := instance.decodeToResponse(buffer)
 	if err != nil {
-		instance.tracer.Tracef("err: %s", err)
 		return nil, fmt.Errorf("decoding JSON fails, this is unexpected %s", err)
 	}
 
