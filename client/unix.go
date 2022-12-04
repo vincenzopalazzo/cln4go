@@ -1,7 +1,6 @@
 package client
 
 import (
-	"bufio"
 	"fmt"
 	"math/rand"
 	"net"
@@ -76,28 +75,18 @@ func (instance UnixRPC) Call(method string, data map[string]any) (map[string]any
 		return nil, err
 	}
 
-	buffer := []byte{}
-	scanner := bufio.NewScanner(instance.socket)
-	// CLN return a really big buffer whe there is not filtering
-	// option active, so we need a way to say. Please read till
-	// the end.
-	//
-	// The actual what that this is implement is the more clean
-	// and easy way, but there case like https://github.com/LNOpenMetrics/go-lnmetrics.reporter/issues/123
-	// where we reach the max buffer size and the
-	// scan abort with an invalid json.
-	scanner.Buffer(buffer, bufio.MaxScanTokenSize*4)
-	for scanner.Scan() {
-		if line := scanner.Bytes(); len(line) > 0 {
-			instance.tracer.Trace(string(line))
-			buffer = append(buffer, line...)
-		} else {
-			break
-		}
+	// this scanner will read the buffer in one shot, so
+	// there is no need to loop and append inside anther buffer
+	// it is already done by the Scanner.
+	var scanner DynamicScanner
+	if !scanner.Scan(instance.socket) && scanner.Error() != nil {
+		return nil, fmt.Errorf("scanner error: %s", scanner.Error())
 	}
+	buffer := scanner.Bytes()
 
 	resp, err := instance.decodeToResponse(buffer)
 	if err != nil {
+		instance.tracer.Tracef("err: %s", err)
 		return nil, fmt.Errorf("decoding JSON fails, this is unexpected %s", err)
 	}
 

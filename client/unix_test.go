@@ -1,6 +1,7 @@
 package client
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"testing"
@@ -28,7 +29,8 @@ func TestUnixCallOne(t *testing.T) {
 	}
 
 	if response["id"] == "" {
-		panic("Response received by the node is invalid")
+		resp, _ := json.Marshal(response)
+		panic(fmt.Sprintf("Response received by the node is invalid: %s", string(resp)))
 	}
 }
 
