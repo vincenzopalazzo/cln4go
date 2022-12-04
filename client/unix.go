@@ -5,6 +5,8 @@ import (
 	"math/rand"
 	"net"
 
+	"github.com/vincenzopalazzo/cpstl/go/io/scan"
+
 	"github.com/vincenzopalazzo/cln4go/comm/encoder"
 	"github.com/vincenzopalazzo/cln4go/comm/jsonrpcv2"
 	"github.com/vincenzopalazzo/cln4go/comm/tracer"
@@ -78,7 +80,7 @@ func (instance UnixRPC) Call(method string, data map[string]any) (map[string]any
 	// this scanner will read the buffer in one shot, so
 	// there is no need to loop and append inside anther buffer
 	// it is already done by the Scanner.
-	var scanner DynamicScanner
+	var scanner scan.DynamicScanner
 	if !scanner.Scan(instance.socket) && scanner.Error() != nil {
 		return nil, fmt.Errorf("scanner error: %s", scanner.Error())
 	}
