@@ -1,6 +1,7 @@
 package client
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"testing"
@@ -35,6 +36,7 @@ func TestGenericCallOne(t *testing.T) {
 	}
 
 	if response.Id == "" {
-		panic("Response received by the node is invalid")
+		resp, _ := json.Marshal(response)
+		panic(fmt.Sprintf("response received by the node is invalid %s", string(resp)))
 	}
 }
