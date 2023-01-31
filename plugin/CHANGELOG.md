@@ -1,3 +1,9 @@
+# v0.0.2-beta.1
+
+## Added
+- expose decoder with a Get method ([commit](https://github.com/vincenzopalazzo/cln4go/commit/4b91735e3d307828f75e269ac70030536983a872)). @vincenzopalazzo 31-01-2023
+
+
 # v0.0.1-beta.4
 
 ## Fixed
