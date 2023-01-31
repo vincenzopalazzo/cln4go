@@ -49,6 +49,10 @@ func (self *Plugin[T]) SetEncoder(encoder encoder.JSONEncoder) {
 	self.encoder = encoder
 }
 
+func (self *Plugin[T]) GetEncoder() encoder.JSONEncoder {
+	return self.encoder
+}
+
 func (self *Plugin[T]) GetState() T {
 	return self.State
 }
