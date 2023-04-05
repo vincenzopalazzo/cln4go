@@ -18,7 +18,7 @@ func TestUnixCallOne(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	response, err := client.Call("getinfo", make(map[string]interface{}))
+	response, err := Call[map[string]any, map[string]any](client, "getinfo", map[string]any{})
 
 	if err != nil {
 		panic(err)
@@ -34,6 +34,11 @@ func TestUnixCallOne(t *testing.T) {
 	}
 }
 
+type MapReq = map[string]any
+type GetInfo struct {
+	network string
+}
+
 func TestUnixCallOneTyped(t *testing.T) {
 	path := os.Getenv("CLN_UNIX_SOCKET")
 	if path == "" {
@@ -45,7 +50,8 @@ func TestUnixCallOneTyped(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	response, err := Call[*UnixRPC, MapReq, GetInfo](client, "getinfo", make(map[string]any, 0))
+
+	response, err := Call[MapReq, *GetInfo](client, "getinfo", make(map[string]any, 0))
 
 	if err != nil {
 		panic(err)
@@ -55,7 +61,7 @@ func TestUnixCallOneTyped(t *testing.T) {
 		panic("The get info is null, there is some problem with the client implementation")
 	}
 
-	if response.Id == "" {
-		panic("Response received by the node is invalid")
+	if response.network == "bitcoin" {
+		panic("the network should be different from the bitcoin one")
 	}
 }
