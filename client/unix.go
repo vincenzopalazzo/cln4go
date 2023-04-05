@@ -39,60 +39,60 @@ func (self *UnixRPC) SetEncoder(encoder encoder.JSONEncoder) {
 	self.encoder = encoder
 }
 
-func (self *UnixRPC) encodeToBytes(p any) []byte {
-	buf, err := self.encoder.EncodeToByte(p)
+func encodeToBytes[R any](client *UnixRPC, p R) []byte {
+	buf, err := client.encoder.EncodeToByte(p)
 	if err != nil {
-		self.tracer.Tracef("%s", err)
+		client.tracer.Tracef("%s", err)
 		panic(err)
 	}
 	return buf
 }
 
-func (self *UnixRPC) decodeToResponse(s []byte) (*jsonrpcv2.Response[*string], error) {
-	r := jsonrpcv2.Response[*string]{}
+func decodeToResponse[R any](client *UnixRPC, s []byte) (*jsonrpcv2.Response[*string, R], error) {
+	r := jsonrpcv2.Response[*string, R]{}
 	if len(s) == 0 {
 		return &r, nil
 	}
-	if err := self.encoder.DecodeFromBytes(s, &r); err != nil {
-		self.tracer.Tracef("%s", err)
+	if err := client.encoder.DecodeFromBytes(s, &r); err != nil {
+		client.tracer.Tracef("%s", err)
 		return nil, err
 	}
 	return &r, nil
 }
 
 // Call invoke a JSON RPC 2.0 method call by choosing a random id from 0 to 10000
-func (instance UnixRPC) Call(method string, data map[string]any) (map[string]any, error) {
-	id := fmt.Sprintf("%d", rand.Intn(10000))
-	request := jsonrpcv2.Request[*string]{
+func Call[Req any, Resp any](client *UnixRPC, method string, data Req) (Resp, error) {
+	id := fmt.Sprintf("cln4go/%d", rand.Intn(10000))
+	request := jsonrpcv2.Request[*string, Req]{
 		Method:  method,
 		Params:  data,
 		Jsonrpc: "2.0",
 		Id:      &id,
 	}
-	dataBytes := instance.encodeToBytes(request)
+	dataBytes := encodeToBytes(client, request)
 
 	//send data
-	if _, err := instance.socket.Write(dataBytes); err != nil {
-		return nil, err
+	if _, err := client.socket.Write(dataBytes); err != nil {
+		return *new(Resp), err
 	}
 
 	// this scanner will read the buffer in one shot, so
 	// there is no need to loop and append inside anther buffer
 	// it is already done by the Scanner.
 	var scanner scan.DynamicScanner
-	if !scanner.Scan(instance.socket) && scanner.Error() != nil {
-		return nil, fmt.Errorf("scanner error: %s", scanner.Error())
+	if !scanner.Scan(client.socket) && scanner.Error() != nil {
+		return *new(Resp), fmt.Errorf("scanner error: %s", scanner.Error())
 	}
 	buffer := scanner.Bytes()
 
-	resp, err := instance.decodeToResponse(buffer)
+	resp, err := decodeToResponse[Resp](client, buffer)
 	if err != nil {
-		return nil, fmt.Errorf("decoding JSON fails, this is unexpected %s", err)
+		return *new(Resp), fmt.Errorf("decoding JSON fails, this is unexpected %s", err)
 	}
 
 	if resp.Error != nil {
 		code := int64(resp.Error["code"].(float64))
-		return nil, fmt.Errorf("RPC error code: %d and msg: %s", code, resp.Error["message"])
+		return *new(Resp), fmt.Errorf("RPC error code: %d and msg: %s", code, resp.Error["message"])
 	}
 
 	return resp.Result, nil

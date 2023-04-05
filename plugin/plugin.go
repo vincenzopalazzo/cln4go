@@ -10,6 +10,11 @@ import (
 	"github.com/vincenzopalazzo/cln4go/comm/tracer"
 )
 
+type Id = jsonrpcv2.Id
+type Map = map[string]any
+type Request = jsonrpcv2.Request[Id, Map]
+type Response = jsonrpcv2.Response[Id, Map]
+
 // Plugin is the base plugin structure.
 // Used to create and manage the state of a plugin.
 type Plugin[T any] struct {
@@ -155,7 +160,7 @@ func (instance *Plugin[T]) Log(level string, message string) {
 		"level":   level,
 		"message": message,
 	}
-	var notifyRequest = jsonrpcv2.Request[*string]{
+	var notifyRequest = jsonrpcv2.Request[*string, map[string]any]{
 		Id:      nil,
 		Jsonrpc: "2.0",
 		Method:  "log",
@@ -201,18 +206,18 @@ func (instance *Plugin[T]) Start() {
 			}
 		}
 
-		var request jsonrpcv2.Request[any]
+		var request Request
 		if err := instance.encoder.DecodeFromBytes(rawRequest, &request); err != nil {
 			panic(fmt.Sprintf("Error parsing request: %s input %s", err, string(rawRequest)))
 		}
 		if request.Id != nil {
 			result, err := instance.callRPCMethod(request.Method, request.GetParams())
-			var response jsonrpcv2.Response[any]
+			var response Response
 			if err != nil {
 				instance.Log("broken", fmt.Sprintf("plugin generate an error: %s", err))
-				response = jsonrpcv2.Response[any]{Id: request.Id, Error: map[string]any{"message": err.Error(), "code": -2}, Result: nil}
+				response = Response{Id: request.Id, Error: map[string]any{"message": err.Error(), "code": -2}, Result: nil}
 			} else {
-				response = jsonrpcv2.Response[any]{Id: request.Id, Error: nil, Result: result}
+				response = Response{Id: request.Id, Error: nil, Result: result}
 			}
 			responseStr, err := instance.encoder.EncodeToByte(response)
 			if err != nil {

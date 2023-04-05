@@ -4,16 +4,16 @@ import (
 	"os"
 	"testing"
 
-	"github.com/vincenzopalazzo/cln4go/client"
+	cln4go "github.com/vincenzopalazzo/cln4go/client"
 )
 
 func TestCallFistMethod(t *testing.T) {
 	path := os.Getenv("CLN_UNIX_SOCKET")
-	client, err := client.NewUnix(path)
+	client, err := cln4go.NewUnix(path)
 	if err != nil {
 		panic(err)
 	}
-	response, err := client.Call("hello", make(map[string]interface{}))
+	response, err := cln4go.Call[Map, Map](client, "hello", make(map[string]interface{}))
 	if err != nil {
 		panic(err)
 	}
@@ -30,11 +30,11 @@ func TestCallFistMethod(t *testing.T) {
 
 func TestOptionValueExist(t *testing.T) {
 	path := os.Getenv("CLN_UNIX_SOCKET")
-	client, err := client.NewUnix(path)
+	client, err := cln4go.NewUnix(path)
 	if err != nil {
 		panic(err)
 	}
-	response, err := client.Call("foo_bar", make(map[string]interface{}))
+	response, err := cln4go.Call[Map, Map](client, "foo_bar", make(map[string]interface{}))
 	if err != nil {
 		panic(err)
 	}
