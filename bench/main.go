@@ -44,7 +44,7 @@ func runBenchmarks(benchs map[string]func(*testing.B)) {
 			Name:    name,
 			Runs:    res.N,
 			Times:   res.T,
-			TimeStr: fmt.Sprintf("%s", res.T),
+			TimeStr: res.T.String(),
 		}
 		log.Infof("----------------- %s -----------------", name)
 		log.Infof("Number of run: %d", b.Runs)
