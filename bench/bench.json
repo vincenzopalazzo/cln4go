@@ -1,0 +1,1 @@
+{"bench":[{"name":"cln4go-listnodes","runs":1000000000,"times":30111298,"time_str":"30.111298ms"},{"name":"glightning-listnodes","runs":1000000000,"times":93316484,"time_str":"93.316484ms"},{"name":"cln4go-listchannels","runs":1000000000,"times":117271504,"time_str":"117.271504ms"},{"name":"glightning-listchannels","runs":1000000000,"times":177783276,"time_str":"177.783276ms"}]}

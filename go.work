@@ -3,3 +3,4 @@ go 1.18
 use ./comm
 use ./client
 use ./plugin
+use ./bench
