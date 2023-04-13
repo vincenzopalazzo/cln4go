@@ -107,7 +107,7 @@ The subject contains a succinct description of the change:
 ### Body
 
 You are free to put all the content you want inside the body, but if you are fixing
-an exception or some wrong behavior you must put the details or stacktrace inside the body ensure sure that
+an exception or some wrong behavior you must put the details or stacktrace inside the body ensure that
 the search engine indexes it.
 
 An example of commit body is the following one
@@ -127,25 +127,6 @@ The stacktrace is the following one
 description: "`Rust core lightning Rust framework` HACKING guide"
 ---
 ```
-
-## How to make the release
-
-This is the most fun part and also is the most difficult one in a monorepo repository.
-
-In particular, "core lightning Go Framework" has the possibility to release one single package at a time, or
-all together.
-
-To prepare for the release, these steps must be followed:
-
-- Bump the version number in the package before the release, and the version inside the `changelog.json` in the package root;
-    - Use a Personal Access Token or generate a [new one](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token).
-- Generate the changelog related to the package:
-    - `export GITHUB_TOKEN="your_token"`
-    - `make {changelog_rpc|changelog_plugin|changelog_common|changelog}`, where:
-        - `changelog_client`: generate the changelog for rpc library;
-        - `changelog_plugin`: generate the changelog for plugin module;
-        - `changelog_plugin_macros`: generate the changelog for common module.
-        - `changelog`: generate all changelogs.
 
 N.B: Part of this document is stolen from [core lightning](https://github.com/ElementsProject/lightning/blob/master/doc/HACKING.md) docs made with from @rustyrussell 's experience.
 
