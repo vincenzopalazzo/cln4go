@@ -11,7 +11,8 @@
   </span>
 
   <h4>
-    <a href="https://github.com/vincenzopalazzo/cln4go">Project Homepage</a>
+    <a href="https://cln4go.netlify.app/">Home Page</a>
+    <a href="https://github.com/vincenzopalazzo/cln4go">Source Code</a>
   </h4>
 </div>
 
