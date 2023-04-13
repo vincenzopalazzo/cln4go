@@ -26,10 +26,10 @@ type benchResult struct {
 }
 
 type bench struct {
-	Name  string        `json:"name"`
-	Runs  int           `json:"runs"`
-	Times time.Duration `json:"times"`
-	TimeStr string 		`json:"time_str"`
+	Name    string        `json:"name"`
+	Runs    int           `json:"runs"`
+	Times   time.Duration `json:"times"`
+	TimeStr string        `json:"time_str"`
 }
 
 // runBencmarks - entry point of the benchmarks!
@@ -41,9 +41,9 @@ func runBenchmarks(benchs map[string]func(*testing.B)) {
 	for name, bench_fn := range benchs {
 		res := testing.Benchmark(bench_fn)
 		b := bench{
-			Name:  name,
-			Runs:  res.N,
-			Times: res.T,
+			Name:    name,
+			Runs:    res.N,
+			Times:   res.T,
 			TimeStr: fmt.Sprintf("%s", res.T),
 		}
 		log.Infof("----------------- %s -----------------", name)

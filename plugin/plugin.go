@@ -83,7 +83,7 @@ func (self *Plugin[T]) Decode(payload map[string]any, destination any) error {
 }
 
 // Method to add a new rpc method to the plugin.
-func (instance *Plugin[T]) RegisterRPCMethod(name string, usage string, description string, callback RPCCommand[T]) {
+func (instance *Plugin[T]) RegisterRPCMethod(name string, usage string, description string, callback func(plugin *Plugin[T], request Map) (Map, error)) {
 	instance.RpcMethods[name] = &rpcMethod[T]{
 		Name:            name,
 		Usage:           usage,
@@ -106,7 +106,7 @@ func (instance *Plugin[T]) RegisterOption(name string, typ string, def string, d
 }
 
 // Method to add a new rpc notification to the plugin.
-func (instance *Plugin[T]) RegisterNotification(name string, callback RPCEvent[T]) {
+func (instance *Plugin[T]) RegisterNotification(name string, callback func(plugin *Plugin[T], request Map)) {
 	instance.Notifications[name] = &rpcNotification[T]{
 		onEvent:  name,
 		callback: callback,
@@ -114,7 +114,7 @@ func (instance *Plugin[T]) RegisterNotification(name string, callback RPCEvent[T
 }
 
 // Method to add a new rpc hook to the plugin.
-func (instance *Plugin[T]) RegisterHook(name string, before []string, after []string, callback RPCCommand[T]) {
+func (instance *Plugin[T]) RegisterHook(name string, before []string, after []string, callback func(plugin *Plugin[T], request Map) (Map, error)) {
 	instance.Hooks[name] = &rpcHook[T]{
 		name:     name,
 		before:   before,
@@ -179,8 +179,8 @@ func (instance *Plugin[T]) Log(level string, message string) {
 
 // Configuring a plugin with the default rpc methods Core Lightning needs to work.
 func (instance *Plugin[T]) configurePlugin() {
-	instance.RegisterRPCMethod("getmanifest", "", "", &getManifest[T]{})
-	instance.RegisterRPCMethod("init", "", "", &initMethod[T]{})
+	instance.RegisterRPCMethod("getmanifest", "", "", GetManifest[T])
+	instance.RegisterRPCMethod("init", "", "", InitCall[T])
 }
 
 func (instance *Plugin[T]) Start() {
