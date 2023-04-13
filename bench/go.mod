@@ -1,4 +1,4 @@
-module git.hedwing.dev/vincenzopalazzo/cln-rpc-benchmarks
+module github/vincenzopalazzo/cln4go/bench
 
 go 1.20
 
