@@ -178,13 +178,13 @@ func (instance *Plugin[T]) Log(level string, message string) {
 }
 
 // Configuring a plugin with the default rpc methods Core Lightning needs to work.
-func (instance *Plugin[T]) configurePlugin() {
-	instance.RegisterRPCMethod("getmanifest", "", "", GetManifest[T])
-	instance.RegisterRPCMethod("init", "", "", InitCall[T])
+func (self *Plugin[T]) configurePlugin() {
+	self.RegisterRPCMethod("getmanifest", "", "", GetManifest[T])
+	self.RegisterRPCMethod("init", "", "", InitCall[T])
 }
 
-func (instance *Plugin[T]) Start() {
-	instance.configurePlugin()
+func (self *Plugin[T]) Start() {
+	self.configurePlugin()
 	reader := bufio.NewReader(os.Stdin)
 	writer := bufio.NewWriter(os.Stdout)
 	for {
@@ -207,29 +207,29 @@ func (instance *Plugin[T]) Start() {
 		}
 
 		var request Request
-		if err := instance.encoder.DecodeFromBytes(rawRequest, &request); err != nil {
+		if err := self.encoder.DecodeFromBytes(rawRequest, &request); err != nil {
 			panic(fmt.Sprintf("Error parsing request: %s input %s", err, string(rawRequest)))
 		}
 		if request.Id != nil {
-			result, err := instance.callRPCMethod(request.Method, request.GetParams())
+			result, err := self.callRPCMethod(request.Method, request.GetParams())
 			var response Response
 			if err != nil {
-				instance.Log("broken", fmt.Sprintf("plugin generate an error: %s", err))
-				response = Response{Id: request.Id, Error: map[string]any{"message": err.Error(), "code": -2}, Result: nil}
+				self.Log("broken", fmt.Sprintf("plugin generate an error: %s", err))
+				response = Response{Id: request.Id, Jsonrpc: "2.0", Error: map[string]any{"message": err.Error(), "code": -2}, Result: nil}
 			} else {
-				response = Response{Id: request.Id, Error: nil, Result: result}
+				response = Response{Id: request.Id, Jsonrpc: "2.0", Error: nil, Result: result}
 			}
-			responseStr, err := instance.encoder.EncodeToByte(response)
+			responseStr, err := self.encoder.EncodeToByte(response)
 			if err != nil {
-				instance.Log("broken", fmt.Sprintf("Error marshalling response: %s", err))
+				self.Log("broken", fmt.Sprintf("Error marshalling response: %s", err))
 				panic(err)
 			}
 			if _, err := writer.Write(responseStr); err != nil {
-				instance.tracer.Infof("%s", err)
+				self.tracer.Infof("%s", err)
 			}
 			writer.Flush()
 		} else {
-			instance.handleNotification(request.Method, request.GetParams())
+			self.handleNotification(request.Method, request.GetParams())
 		}
 	}
 }
