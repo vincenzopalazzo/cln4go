@@ -199,7 +199,7 @@ func (self *Plugin[T]) Start() {
 
 			if err != nil {
 				if err == io.EOF {
-					break
+					return
 				}
 				panic(err)
 			}
