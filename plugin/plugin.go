@@ -3,6 +3,7 @@ package plugin
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/vincenzopalazzo/cln4go/comm/encoder"
@@ -197,6 +198,9 @@ func (self *Plugin[T]) Start() {
 			bytesResp1, err := reader.Read(recvData[:])
 
 			if err != nil {
+				if err == io.EOF {
+					break
+				}
 				panic(err)
 			}
 			rawRequest = append(rawRequest, recvData[:bytesResp1]...)
