@@ -1,5 +1,7 @@
 package jsonrpcv2
 
+import "fmt"
+
 // Id in the JSON RPC 2.0 Protocol there is the possibility to have
 // an id as int or a string, so this type should make the encoder smarter
 // and able to decode both types
@@ -8,22 +10,36 @@ type Id interface {
 	*string | *int | any
 }
 
-type Request[I Id, P any] struct {
+type Params interface {
+	map[string]any | []any
+}
+
+type Request struct {
 	Method  string `json:"method"`
-	Params  P      `json:"params"`
+	Params  any    `json:"params"`
 	Jsonrpc string `json:"jsonrpc"`
-	Id      I      `json:"id,omitempty"`
+	Id      Id     `json:"id,omitempty"`
 }
 
 // TODO: core lightning should be consistent with the type that return
 // in the params
-func (instance *Request[I, P]) GetParams() P {
-	return instance.Params
+func (instance *Request) GetParams() map[string]any {
+	switch params := instance.Params.(type) {
+	case map[string]any:
+		return params
+	case []any:
+		if len(params) == 0 {
+			panic(fmt.Sprintf("%s", params))
+		}
+		return map[string]any{}
+	default:
+		panic("Params has a different type")
+	}
 }
 
-type Response[I Id, R any] struct {
+type Response[R any] struct {
 	Result  R              `json:"result"`
 	Error   map[string]any `json:"error"`
 	Jsonrpc string         `json:"jsonrpc"`
-	Id      I              `json:"id,omitempty"`
+	Id      Id             `json:"id,omitempty"`
 }
