@@ -13,8 +13,8 @@ import (
 
 type Id = jsonrpcv2.Id
 type Map = map[string]any
-type Request = jsonrpcv2.Request[Id, Map]
-type Response = jsonrpcv2.Response[Id, Map]
+type Request = jsonrpcv2.Request
+type Response = jsonrpcv2.Response[Map]
 
 // Plugin is the base plugin structure.
 // Used to create and manage the state of a plugin.
@@ -161,7 +161,7 @@ func (instance *Plugin[T]) Log(level string, message string) {
 		"level":   level,
 		"message": message,
 	}
-	var notifyRequest = jsonrpcv2.Request[*string, map[string]any]{
+	var notifyRequest = jsonrpcv2.Request{
 		Id:      nil,
 		Jsonrpc: "2.0",
 		Method:  "log",

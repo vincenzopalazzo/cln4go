@@ -48,8 +48,8 @@ func encodeToBytes[R any](client *UnixRPC, p R) []byte {
 	return buf
 }
 
-func decodeToResponse[R any](client *UnixRPC, s []byte) (*jsonrpcv2.Response[*string, R], error) {
-	r := jsonrpcv2.Response[*string, R]{}
+func decodeToResponse[R any](client *UnixRPC, s []byte) (*jsonrpcv2.Response[R], error) {
+	r := jsonrpcv2.Response[R]{}
 	if len(s) == 0 {
 		return &r, nil
 	}
@@ -63,7 +63,7 @@ func decodeToResponse[R any](client *UnixRPC, s []byte) (*jsonrpcv2.Response[*st
 // Call invoke a JSON RPC 2.0 method call by choosing a random id from 0 to 10000
 func Call[Req any, Resp any](client *UnixRPC, method string, data Req) (Resp, error) {
 	id := fmt.Sprintf("cln4go/%d", rand.Intn(10000))
-	request := jsonrpcv2.Request[*string, Req]{
+	request := jsonrpcv2.Request{
 		Method:  method,
 		Params:  data,
 		Jsonrpc: "2.0",
