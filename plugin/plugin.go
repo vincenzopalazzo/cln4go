@@ -212,6 +212,7 @@ func (self *Plugin[T]) Start() {
 
 		var request Request
 		if err := self.encoder.DecodeFromBytes(rawRequest, &request); err != nil {
+			self.Log("broken", fmt.Sprintf("%s", err))
 			panic(fmt.Sprintf("Error parsing request: %s input %s", err, string(rawRequest)))
 		}
 		if request.Id != nil {

@@ -28,7 +28,7 @@ func (instance *Request) GetParams() map[string]any {
 	case map[string]any:
 		return params
 	case []any:
-		if len(params) == 0 {
+		if len(params) != 0 {
 			panic(fmt.Sprintf("%s", params))
 		}
 		return map[string]any{}
