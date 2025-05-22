@@ -1,6 +1,6 @@
 # cln4go Plugin
 
-Implementing a plugin in Go it's really straightforward, and the cln4go provide 
+Implementing a plugin in Go it's really straightforward, and the cln4go provide
 an easy interface to implement one from scratch
 
 An hello world plugin can be implemented with
@@ -18,11 +18,11 @@ type IPluginState interface {
     SetName(name string)
 }
 
-// PluginState - each plugin has a state that is stored 
+// PluginState - each plugin has a state that is stored
 // inside the plugin and mutated across the plugin lifecycle.
 //
-// This is the perfect place where store the UNIX client if 
-// needed by the plugin, otherwise the plugin do not include this 
+// This is the perfect place where store the UNIX client if
+// needed by the plugin, otherwise the plugin do not include this
 // dependencies.
 type PluginState struct {
     Name string
@@ -46,7 +46,7 @@ func (instance *OnRPCCommand[IPluginState]) Call(plugin *plugin.Plugin[IPluginSt
 // Implementing another callback
 type Hello[T IPluginState] struct{}
 
-// Implementing the callback, please note that this is not an void method, so this callback can be register 
+// Implementing the callback, please note that this is not an void method, so this callback can be register
 // as RPC method or as an hook.
 func (instance *Hello[IPluginState]) Call(plugin *plugin.Plugin[IPluginState], request map[string]any) (map[string]any, error) {
     return map[string]any{"message": "hello from go 1.18"}, nil
@@ -64,9 +64,9 @@ func main() {
 }
 ```
 
-The code to write a callback is to much, and this would be better to have just a func declaration, 
+The code to write a callback is to much, and this would be better to have just a func declaration,
 so the API to define a callback can be improved but for now we leave this as it is because with generics
-we have some limitation, and a feature from the Go lang side is required. We keep track of this feature 
+we have some limitation, and a feature from the Go lang side is required. We keep track of this feature
 with the issue [#12](https://github.com/vincenzopalazzo/cln4go/issues/12)
 
 ## Intercept on init callback
@@ -110,9 +110,37 @@ func main() {
 }
 ```
 
-As in the [client](./client.md) it is possible define a custom encoder and set it as we did inside 
+As in the [client](./client.md) it is possible define a custom encoder and set it as we did inside
 the client section, but also it is register and access to a custom tracer as discussed in the [common](./common.md)
 section to have a different way to log the plugin.
+
+## Returning JSON-RPC 2.0 Errors from Go
+
+cln4go now supports returning proper JSON-RPC 2.0 errors from your plugin methods in an idiomatic Go way. You can return a `*plugin.JSONRPCError` from any RPC method, and it will be serialized as a JSON-RPC error object on the wire, preserving the error code, message, and optional data fields.
+
+### Example
+
+```go
+import "github.com/vincenzopalazzo/cln4go/plugin"
+
+func ErrorExample(plugin *plugin.Plugin[*PluginState], request map[string]any) (map[string]any, error) {
+    return nil, &plugin.JSONRPCError{
+        Code:    1001,
+        Message: "This is a JSON-RPC error from Go",
+        Data:    map[string]any{"hint": "You can add extra error data here"},
+    }
+}
+```
+
+Register this method as usual:
+
+```go
+plugin.RegisterRPCMethod("error_example", "", "an example of JSON-RPC error return", ErrorExample)
+```
+
+When this method returns an error, the plugin framework will send a JSON-RPC error object to the client, fully compatible with the JSON-RPC 2.0 specification. If you return a regular Go error, a generic error object will be sent instead.
+
+This makes it easy to propagate rich, structured errors from your Go plugin to any JSON-RPC client.
 
 ## Plugin Template
 
