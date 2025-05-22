@@ -9,6 +9,7 @@ github.com/charmbracelet/lipgloss v0.7.1/go.mod h1:yG0k3giv8Qj8edTCbbg6AlQ5e8KNW
 github.com/charmbracelet/log v0.2.1 h1:1z7jpkk4yKyjwlmKmKMM5qnEDSpV32E7XtWhuv0mTZE=
 github.com/charmbracelet/log v0.2.1/go.mod h1:GwFfjewhcVDWLrpAbY5A0Hin9YOlEn40eWT4PNaxFT4=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/go-logfmt/logfmt v0.6.0 h1:wGYYu3uicYdqXVgoYbvnkrPVXkuLM1p1ifugDMEdRi4=
 github.com/go-logfmt/logfmt v0.6.0/go.mod h1:WYhtIu8zTZfxdn5+rREduYbwxfcBr/Vr6KEVveWlfTs=
@@ -27,6 +28,7 @@ github.com/muesli/termenv v0.15.1 h1:UzuTb/+hhlBugQz28rpzey4ZuKcZ03MeKsoG7IJZIxs
 github.com/muesli/termenv v0.15.1/go.mod h1:HeAQPTzpfs016yGtA4g00CsdYnVLJvxsS4ANqrZs2sQ=
 github.com/niftynei/glightning v0.8.2 h1:UySBoNya9BbrL9qrWG0sw7vY5MMtireo4mnN9dJ+GJY=
 github.com/niftynei/glightning v0.8.2/go.mod h1:nOHtsM1ZfMwOxwl6LE72U611ozP+IBj/xVkJ+9vwtd4=
+github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/rivo/uniseg v0.1.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
 github.com/rivo/uniseg v0.2.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
@@ -36,14 +38,13 @@ github.com/sirupsen/logrus v1.9.0 h1:trlNQbNUG3OdDrDil03MCb1H2o9nJ1x4/5LYw7byDE0
 github.com/sirupsen/logrus v1.9.0/go.mod h1:naHLuLoDiP4jHNo9R0sCBMtWGeIprob74mVsIT4qYEQ=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
+github.com/stretchr/testify v1.8.2 h1:+h33VjcLVPDHtOdpUCuF+7gSuG3yGIftsP1YvFihtJ8=
 github.com/vincenzopalazzo/cln4go/client v0.0.0-20230131113223-c518122c3f70 h1:7NJ3bck59/rXg/MBfOth4R5hqabYzsoimXl/T64H0/A=
 github.com/vincenzopalazzo/cln4go/client v0.0.0-20230131113223-c518122c3f70/go.mod h1:7C64iH2eVEE7WkIMQa8fmtQmFNzprDt6rIZOxG57Thg=
 github.com/vincenzopalazzo/cln4go/comm v0.0.0-20230131113223-c518122c3f70 h1:kSqns8J4CJnGq9PrXRr//c25cTkL+8J+GekhcRYxGyg=
 github.com/vincenzopalazzo/cln4go/comm v0.0.0-20230131113223-c518122c3f70/go.mod h1:zyOWcz5aSHCsLuZLaVBTjbRnxlf5Ac+Rfhu5Ciuyy2c=
 github.com/vincenzopalazzo/cpstl/go v0.0.0-20221204131531-d0659db4dd2a h1:eh427yzx/JbkOuLjSS2bPop/14HMq7eYGWC1bp29mzU=
 github.com/vincenzopalazzo/cpstl/go v0.0.0-20221204131531-d0659db4dd2a/go.mod h1:VNETfpfs0pZQKEg9qwSm7M1gfVrliFFzxKVVppNaxbM=
-github.com/vincenzopalazzo/glightning v0.8.2 h1:k9UV9jH2pcinPI4Wdnz7tXTUDHqp4b0DTvBwno333dI=
-github.com/vincenzopalazzo/glightning v0.8.2/go.mod h1:zNMKjmjwMOPLoeWV7/u6NgC3o/VUGha/Vb1x2AsM3T0=
 github.com/vincenzopalazzo/glightning v0.8.3-0.20230405224222-e0556b8b5eb0 h1:bozoLx8kJd8bgGZfRRwz2/NQ/vKpErKwTfx8OTXBtcc=
 github.com/vincenzopalazzo/glightning v0.8.3-0.20230405224222-e0556b8b5eb0/go.mod h1:zNMKjmjwMOPLoeWV7/u6NgC3o/VUGha/Vb1x2AsM3T0=
 golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
@@ -52,3 +53,4 @@ golang.org/x/sys v0.7.0 h1:3jlCCIQZPdOYu1h8BkNvLz8Kgwtae2cagcG/VamtZRU=
 golang.org/x/sys v0.7.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
+gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=

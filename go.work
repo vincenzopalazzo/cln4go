@@ -1,6 +1,11 @@
-go 1.18
+go 1.20
+
+toolchain go1.24.2
 
 use ./comm
+
 use ./client
+
 use ./plugin
+
 use ./bench
