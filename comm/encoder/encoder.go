@@ -1,3 +1,4 @@
+//lint:file-ignore ST1006 receiver name should be a reflection of its identity
 package encoder
 
 import (

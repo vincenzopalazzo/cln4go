@@ -175,7 +175,9 @@ func (instance *Plugin[T]) Log(level string, message string) {
 	if _, err := writer.Write(notifyStr); err != nil {
 		instance.tracer.Infof("%s", err)
 	}
-	writer.Flush()
+	if err := writer.Flush(); err != nil {
+		instance.tracer.Infof("%s", err)
+	}
 }
 
 // Configuring a plugin with the default rpc methods Core Lightning needs to work.
@@ -232,7 +234,9 @@ func (self *Plugin[T]) Start() {
 			if _, err := writer.Write(responseStr); err != nil {
 				self.tracer.Infof("%s", err)
 			}
-			writer.Flush()
+			if err := writer.Flush(); err != nil {
+				self.tracer.Infof("%s", err)
+			}
 		} else {
 			self.handleNotification(request.Method, request.GetParams())
 		}
