@@ -91,8 +91,7 @@ func Call[Req any, Resp any](client *UnixRPC, method string, data Req) (Resp, er
 	}
 
 	if resp.Error != nil {
-		code := int64(resp.Error["code"].(float64))
-		return *new(Resp), fmt.Errorf("RPC error code: %d and msg: %s", code, resp.Error["message"])
+		return *new(Resp), fmt.Errorf("RPC error code: %d and msg: %s", resp.Error.Code, resp.Error.Message)
 	}
 
 	return resp.Result, nil
