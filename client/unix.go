@@ -81,17 +81,17 @@ func Call[Req any, Resp any](client *UnixRPC, method string, data Req) (Resp, er
 	// it is already done by the Scanner.
 	var scanner scan.DynamicScanner
 	if !scanner.Scan(client.socket) && scanner.Error() != nil {
-		return *new(Resp), fmt.Errorf("scanner error: %s", scanner.Error())
+		return *new(Resp), jsonrpcv2.MakeRPCError(-1, "scanner error", map[string]any{"error": scanner.Error()})
 	}
 	buffer := scanner.Bytes()
 
 	resp, err := decodeToResponse[Resp](client, buffer)
 	if err != nil {
-		return *new(Resp), fmt.Errorf("decoding JSON fails, this is unexpected %s", err)
+		return *new(Resp), jsonrpcv2.MakeRPCError(-1, "decoding JSON fails, this is unexpected", map[string]any{"error": err})
 	}
 
 	if resp.Error != nil {
-		return *new(Resp), fmt.Errorf("RPC error code: %d and msg: %s", resp.Error.Code, resp.Error.Message)
+		return *new(Resp), resp.Error
 	}
 
 	return resp.Result, nil
