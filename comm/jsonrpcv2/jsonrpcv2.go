@@ -38,8 +38,27 @@ func (instance *Request) GetParams() map[string]any {
 }
 
 type Response[R any] struct {
-	Result  R              `json:"result"`
-	Error   map[string]any `json:"error"`
-	Jsonrpc string         `json:"jsonrpc"`
-	Id      Id             `json:"id,omitempty"`
+	Result  R             `json:"result"`
+	Error   *JSONRPCError `json:"error"`
+	Jsonrpc string        `json:"jsonrpc"`
+	Id      Id            `json:"id,omitempty"`
+}
+
+// JSONRPCError represents a JSON-RPC 2.0 error object.
+type JSONRPCError struct {
+	Code    int            `json:"code"`
+	Message string         `json:"message"`
+	Data    map[string]any `json:"data,omitempty"`
+}
+
+func (self *JSONRPCError) Error() string {
+	return fmt.Sprintf("JSONRPCError: code=%d, message=%s, data=%v", self.Code, self.Message, self.Data)
+}
+
+func MakeRPCError(code int, message string, data map[string]any) error {
+	return &JSONRPCError{
+		Code:    code,
+		Message: message,
+		Data:    data,
+	}
 }

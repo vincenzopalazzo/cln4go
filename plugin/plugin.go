@@ -16,25 +16,6 @@ type Map = map[string]any
 type Request = jsonrpcv2.Request
 type Response = jsonrpcv2.Response[Map]
 
-// JSONRPCError represents a JSON-RPC 2.0 error object.
-type JSONRPCError struct {
-	Code    int            `json:"code"`
-	Message string         `json:"message"`
-	Data    map[string]any `json:"data,omitempty"`
-}
-
-func (self *JSONRPCError) Error() string {
-	return fmt.Sprintf("JSONRPCError: code=%d, message=%s, data=%v", self.Code, self.Message, self.Data)
-}
-
-func MakeRPCError(code int, message string, data map[string]any) error {
-	return &JSONRPCError{
-		Code:    code,
-		Message: message,
-		Data:    data,
-	}
-}
-
 // Plugin is the base plugin structure.
 // Used to create and manage the state of a plugin.
 type Plugin[T any] struct {
@@ -243,11 +224,11 @@ func (self *Plugin[T]) Start() {
 			if err != nil {
 				self.Log("broken", fmt.Sprintf("plugin generate an error: %s", err))
 				// If the error is a JSONRPCError, use it directly for the JSON-RPC error object
-				if jrpcErr, ok := err.(*JSONRPCError); ok {
-					response = Response{Id: request.Id, Jsonrpc: "2.0", Error: map[string]any{"code": jrpcErr.Code, "message": jrpcErr.Message, "data": jrpcErr.Data}, Result: nil}
+				if jrpcErr, ok := err.(*jsonrpcv2.JSONRPCError); ok {
+					response = Response{Id: request.Id, Jsonrpc: "2.0", Error: jrpcErr, Result: nil}
 				} else {
 					self.Log("warn", fmt.Sprintf("plugin generate an error: %s but it is not a JSONRPCError so the plugin is losing information here!", err))
-					response = Response{Id: request.Id, Jsonrpc: "2.0", Error: map[string]any{"message": err.Error(), "code": -2}, Result: nil}
+					response = Response{Id: request.Id, Jsonrpc: "2.0", Error: &jsonrpcv2.JSONRPCError{Code: -2, Message: err.Error()}, Result: nil}
 				}
 			} else {
 				response = Response{Id: request.Id, Jsonrpc: "2.0", Error: nil, Result: result}

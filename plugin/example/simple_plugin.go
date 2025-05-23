@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/vincenzopalazzo/cln4go/comm/jsonrpcv2"
 	"github.com/vincenzopalazzo/cln4go/plugin"
 )
 
@@ -33,7 +34,7 @@ func GetOption(plugin *plugin.Plugin[*PluginState], request map[string]any) (map
 // Note: If you get a 'plugin.JSONRPCError is not a type' error, ensure your import path is correct and
 // that JSONRPCError is exported from the plugin package (it is, as of the latest code).
 func ErrorExample(p *plugin.Plugin[*PluginState], request map[string]any) (map[string]any, error) {
-	return nil, plugin.MakeRPCError(1001, "This is a JSON-RPC error from Go", map[string]any{"hint": "You can add extra error data here"})
+	return nil, jsonrpcv2.MakeRPCError(1001, "This is a JSON-RPC error from Go", map[string]any{"hint": "You can add extra error data here"})
 }
 
 func main() {
