@@ -115,13 +115,13 @@ func Call[Req any, Resp any](client *UnixRPC, method string, data Req) (Resp, er
 		return *new(Resp), jsonrpcv2.MakeRPCError(-1, "encoding JSON request failed", map[string]any{"error": err})
 	}
 
-	//send data
+	// send data
 	if _, err := socket.Write(dataBytes); err != nil {
 		return *new(Resp), err
 	}
 
 	// this scanner will read the buffer in one shot, so
-	// there is no need to loop and append inside anther buffer
+	// there is no need to loop and append inside another buffer
 	// it is already done by the Scanner.
 	var scanner scan.DynamicScanner
 	if !scanner.Scan(socket) && scanner.Error() != nil {
