@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"net"
+	"time"
 
 	"github.com/vincenzopalazzo/cpstl/go/io/scan"
 
@@ -12,22 +13,25 @@ import (
 	"github.com/vincenzopalazzo/cln4go/comm/tracer"
 )
 
+// defaultTimeout is the default read/write deadline for each RPC call.
+const defaultTimeout = 5 * time.Minute
+
 type UnixRPC struct {
-	socket  net.Conn
-	tracer  tracer.Tracer
-	encoder encoder.JSONEncoder
+	socketPath string
+	timeout    time.Duration
+	tracer     tracer.Tracer
+	encoder    encoder.JSONEncoder
 }
 
-// NewUnixRPC creates a new UnixRPC instance.
+// NewUnix creates a new UnixRPC instance. The socket path is stored
+// and a fresh connection is created for each RPC call, avoiding
+// stale socket state after failed or timed-out calls.
 func NewUnix(path string) (*UnixRPC, error) {
-	socket, err := net.Dial("unix", path)
-	if err != nil {
-		return nil, err
-	}
 	return &UnixRPC{
-		socket:  socket,
-		tracer:  &tracer.DummyTracer{},
-		encoder: &encoder.GoEncoder{},
+		socketPath: path,
+		timeout:    defaultTimeout,
+		tracer:     &tracer.DummyTracer{},
+		encoder:    &encoder.GoEncoder{},
 	}, nil
 }
 
@@ -37,6 +41,12 @@ func (self *UnixRPC) SetTracer(tracer tracer.Tracer) {
 
 func (self *UnixRPC) SetEncoder(encoder encoder.JSONEncoder) {
 	self.encoder = encoder
+}
+
+// SetTimeout configures the per-call read/write deadline.
+// A zero or negative value disables the deadline.
+func (self *UnixRPC) SetTimeout(timeout time.Duration) {
+	self.timeout = timeout
 }
 
 func encodeToBytes[R any](client *UnixRPC, p R) []byte {
@@ -60,8 +70,20 @@ func decodeToResponse[R any](client *UnixRPC, s []byte) (*jsonrpcv2.Response[R],
 	return &r, nil
 }
 
-// Call invoke a JSON RPC 2.0 method call by choosing a random id from 0 to 10000
+// Call invoke a JSON RPC 2.0 method call by choosing a random id from 0 to 10000.
+// A fresh Unix socket is created for each call and closed when done,
+// preventing stale socket state from corrupting subsequent calls.
 func Call[Req any, Resp any](client *UnixRPC, method string, data Req) (Resp, error) {
+	socket, err := net.Dial("unix", client.socketPath)
+	if err != nil {
+		return *new(Resp), err
+	}
+	defer socket.Close()
+
+	if client.timeout > 0 {
+		socket.SetDeadline(time.Now().Add(client.timeout))
+	}
+
 	id := fmt.Sprintf("cln4go/%d", rand.Intn(10000))
 	request := jsonrpcv2.Request{
 		Method:  method,
@@ -72,7 +94,7 @@ func Call[Req any, Resp any](client *UnixRPC, method string, data Req) (Resp, er
 	dataBytes := encodeToBytes(client, request)
 
 	//send data
-	if _, err := client.socket.Write(dataBytes); err != nil {
+	if _, err := socket.Write(dataBytes); err != nil {
 		return *new(Resp), err
 	}
 
@@ -80,7 +102,7 @@ func Call[Req any, Resp any](client *UnixRPC, method string, data Req) (Resp, er
 	// there is no need to loop and append inside anther buffer
 	// it is already done by the Scanner.
 	var scanner scan.DynamicScanner
-	if !scanner.Scan(client.socket) && scanner.Error() != nil {
+	if !scanner.Scan(socket) && scanner.Error() != nil {
 		return *new(Resp), jsonrpcv2.MakeRPCError(-1, "scanner error", map[string]any{"error": scanner.Error()})
 	}
 	buffer := scanner.Bytes()
