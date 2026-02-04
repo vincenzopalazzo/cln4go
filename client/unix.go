@@ -16,6 +16,11 @@ import (
 // defaultTimeout is the default read/write deadline for each RPC call.
 const defaultTimeout = 5 * time.Minute
 
+// UnixRPC is a JSON-RPC 2.0 client that communicates over a Unix domain socket.
+// A fresh socket connection is created for each Call, so multiple goroutines
+// may invoke Call concurrently. However, the setter methods (SetTracer,
+// SetEncoder, SetTimeout) are not safe for concurrent use and must only
+// be called during initialization, before any Call is made.
 type UnixRPC struct {
 	socketPath string
 	timeout    time.Duration
