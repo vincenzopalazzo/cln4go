@@ -112,7 +112,7 @@ func Call[Req any, Resp any](client *UnixRPC, method string, data Req) (Resp, er
 	}
 	dataBytes, err := encodeToBytes(client, request)
 	if err != nil {
-		return *new(Resp), jsonrpcv2.MakeRPCError(-1, "encoding JSON request failed", map[string]any{"error": err})
+		return *new(Resp), jsonrpcv2.MakeRPCError(-32603, "encoding JSON request failed", map[string]any{"error": err})
 	}
 
 	// send data
@@ -125,13 +125,13 @@ func Call[Req any, Resp any](client *UnixRPC, method string, data Req) (Resp, er
 	// it is already done by the Scanner.
 	var scanner scan.DynamicScanner
 	if !scanner.Scan(socket) && scanner.Error() != nil {
-		return *new(Resp), jsonrpcv2.MakeRPCError(-1, "scanner error", map[string]any{"error": scanner.Error()})
+		return *new(Resp), jsonrpcv2.MakeRPCError(-32603, "scanner error", map[string]any{"error": scanner.Error()})
 	}
 	buffer := scanner.Bytes()
 
 	resp, err := decodeToResponse[Resp](client, buffer)
 	if err != nil {
-		return *new(Resp), jsonrpcv2.MakeRPCError(-1, "decoding JSON fails, this is unexpected", map[string]any{"error": err})
+		return *new(Resp), jsonrpcv2.MakeRPCError(-32700, "decoding JSON fails, this is unexpected", map[string]any{"error": err})
 	}
 
 	if resp.Error != nil {
