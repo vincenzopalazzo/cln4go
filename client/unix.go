@@ -81,7 +81,9 @@ func Call[Req any, Resp any](client *UnixRPC, method string, data Req) (Resp, er
 	defer socket.Close()
 
 	if client.timeout > 0 {
-		socket.SetDeadline(time.Now().Add(client.timeout))
+		if err := socket.SetDeadline(time.Now().Add(client.timeout)); err != nil {
+			return *new(Resp), err
+		}
 	}
 
 	id := fmt.Sprintf("cln4go/%d", rand.Intn(10000))
