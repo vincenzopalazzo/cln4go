@@ -1,2 +1,4 @@
+github.com/vincenzopalazzo/cln4go/comm v0.0.0-20260204152506-7b23e66b5a91 h1:C881Lxe5hzdIH0yrZQnYh/S06jnizfcYuSwan1p4afM=
+github.com/vincenzopalazzo/cln4go/comm v0.0.0-20260204152506-7b23e66b5a91/go.mod h1:zyOWcz5aSHCsLuZLaVBTjbRnxlf5Ac+Rfhu5Ciuyy2c=
 github.com/vincenzopalazzo/cpstl/go v0.0.0-20221204131531-d0659db4dd2a h1:eh427yzx/JbkOuLjSS2bPop/14HMq7eYGWC1bp29mzU=
 github.com/vincenzopalazzo/cpstl/go v0.0.0-20221204131531-d0659db4dd2a/go.mod h1:VNETfpfs0pZQKEg9qwSm7M1gfVrliFFzxKVVppNaxbM=
