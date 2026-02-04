@@ -27,6 +27,9 @@ type UnixRPC struct {
 // and a fresh connection is created for each RPC call, avoiding
 // stale socket state after failed or timed-out calls.
 func NewUnix(path string) (*UnixRPC, error) {
+	if path == "" {
+		return nil, fmt.Errorf("unix socket path must not be empty")
+	}
 	return &UnixRPC{
 		socketPath: path,
 		timeout:    defaultTimeout,
