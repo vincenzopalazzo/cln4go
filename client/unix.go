@@ -78,7 +78,11 @@ func Call[Req any, Resp any](client *UnixRPC, method string, data Req) (Resp, er
 	if err != nil {
 		return *new(Resp), err
 	}
-	defer func() { _ = socket.Close() }()
+	defer func() {
+		if err := socket.Close(); err != nil && client != nil && client.tracer != nil {
+			client.tracer.Tracef("failed to close unix socket: %v", err)
+		}
+	}()
 
 	if client.timeout > 0 {
 		if err := socket.SetDeadline(time.Now().Add(client.timeout)); err != nil {
