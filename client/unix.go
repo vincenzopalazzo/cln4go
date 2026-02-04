@@ -3,6 +3,7 @@ package client
 import (
 	"errors"
 	"fmt"
+	"io"
 	"net"
 	"sync/atomic"
 	"time"
@@ -20,6 +21,10 @@ var requestCounter uint64
 
 // ErrEmptyResponse is returned when the server sends an empty response body.
 var ErrEmptyResponse = errors.New("empty response from server")
+
+// ErrServerClosed is returned when the server closes the connection
+// without sending a response.
+var ErrServerClosed = errors.New("server closed connection without response")
 
 // defaultTimeout is the default read/write deadline for each RPC call.
 // CLN blocking RPCs such as waitanyinvoice or waitblockheight may exceed
@@ -97,7 +102,7 @@ func decodeToResponse[R any](client *UnixRPC, s []byte) (*jsonrpcv2.Response[R],
 func Call[Req any, Resp any](client *UnixRPC, method string, data Req) (Resp, error) {
 	socket, err := net.Dial("unix", client.socketPath)
 	if err != nil {
-		return *new(Resp), err
+		return *new(Resp), fmt.Errorf("connecting to unix socket %s: %w", client.socketPath, err)
 	}
 	defer func() {
 		if err := socket.Close(); err != nil {
@@ -107,7 +112,7 @@ func Call[Req any, Resp any](client *UnixRPC, method string, data Req) (Resp, er
 
 	if client.timeout > 0 {
 		if err := socket.SetDeadline(time.Now().Add(client.timeout)); err != nil {
-			return *new(Resp), err
+			return *new(Resp), fmt.Errorf("setting socket deadline: %w", err)
 		}
 	}
 
@@ -125,7 +130,7 @@ func Call[Req any, Resp any](client *UnixRPC, method string, data Req) (Resp, er
 
 	// send data
 	if _, err := socket.Write(dataBytes); err != nil {
-		return *new(Resp), err
+		return *new(Resp), fmt.Errorf("writing request: %w", err)
 	}
 
 	// this scanner will read the buffer in one shot, so
@@ -134,8 +139,13 @@ func Call[Req any, Resp any](client *UnixRPC, method string, data Req) (Resp, er
 	var scanner scan.DynamicScanner
 	if !scanner.Scan(socket) {
 		if err := scanner.Error(); err != nil {
+			if errors.Is(err, io.EOF) {
+				return *new(Resp), ErrServerClosed
+			}
 			return *new(Resp), fmt.Errorf("reading response: %w", err)
 		}
+		// DynamicScanner returns false with nil error when it finds
+		// the \n\n delimiter; the response data is in Bytes().
 	}
 	buffer := scanner.Bytes()
 
