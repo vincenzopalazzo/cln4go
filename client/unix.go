@@ -1,6 +1,7 @@
 package client
 
 import (
+	"errors"
 	"fmt"
 	"net"
 	"sync/atomic"
@@ -16,6 +17,9 @@ import (
 // requestCounter is a monotonically increasing counter used to generate
 // unique JSON-RPC request IDs across concurrent calls.
 var requestCounter uint64
+
+// ErrEmptyResponse is returned when the server sends an empty response body.
+var ErrEmptyResponse = errors.New("empty response from server")
 
 // defaultTimeout is the default read/write deadline for each RPC call.
 // CLN blocking RPCs such as waitanyinvoice or waitblockheight may exceed
@@ -66,19 +70,19 @@ func (self *UnixRPC) SetTimeout(timeout time.Duration) {
 	self.timeout = timeout
 }
 
-func encodeToBytes[R any](client *UnixRPC, p R) []byte {
+func encodeToBytes[R any](client *UnixRPC, p R) ([]byte, error) {
 	buf, err := client.encoder.EncodeToByte(p)
 	if err != nil {
 		client.tracer.Tracef("%s", err)
-		panic(err)
+		return nil, err
 	}
-	return buf
+	return buf, nil
 }
 
 func decodeToResponse[R any](client *UnixRPC, s []byte) (*jsonrpcv2.Response[R], error) {
 	r := jsonrpcv2.Response[R]{}
 	if len(s) == 0 {
-		return &r, nil
+		return nil, ErrEmptyResponse
 	}
 	if err := client.encoder.DecodeFromBytes(s, &r); err != nil {
 		client.tracer.Tracef("%s", err)
@@ -114,7 +118,10 @@ func Call[Req any, Resp any](client *UnixRPC, method string, data Req) (Resp, er
 		Jsonrpc: "2.0",
 		Id:      &id,
 	}
-	dataBytes := encodeToBytes(client, request)
+	dataBytes, err := encodeToBytes(client, request)
+	if err != nil {
+		return *new(Resp), fmt.Errorf("encoding JSON request: %w", err)
+	}
 
 	// send data
 	if _, err := socket.Write(dataBytes); err != nil {
@@ -125,14 +132,16 @@ func Call[Req any, Resp any](client *UnixRPC, method string, data Req) (Resp, er
 	// there is no need to loop and append inside another buffer
 	// it is already done by the Scanner.
 	var scanner scan.DynamicScanner
-	if !scanner.Scan(socket) && scanner.Error() != nil {
-		return *new(Resp), jsonrpcv2.MakeRPCError(-1, "scanner error", map[string]any{"error": scanner.Error()})
+	if !scanner.Scan(socket) {
+		if err := scanner.Error(); err != nil {
+			return *new(Resp), fmt.Errorf("reading response: %w", err)
+		}
 	}
 	buffer := scanner.Bytes()
 
 	resp, err := decodeToResponse[Resp](client, buffer)
 	if err != nil {
-		return *new(Resp), jsonrpcv2.MakeRPCError(-1, "decoding JSON fails, this is unexpected", map[string]any{"error": err})
+		return *new(Resp), fmt.Errorf("decoding JSON response: %w", err)
 	}
 
 	if resp.Error != nil {
