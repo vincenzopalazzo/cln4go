@@ -14,6 +14,9 @@ import (
 )
 
 // defaultTimeout is the default read/write deadline for each RPC call.
+// CLN blocking RPCs such as waitanyinvoice or waitblockheight may exceed
+// this duration; use SetTimeout with a larger value or zero to disable
+// the deadline for those calls.
 const defaultTimeout = 5 * time.Minute
 
 // UnixRPC is a JSON-RPC 2.0 client that communicates over a Unix domain socket.
@@ -52,7 +55,9 @@ func (self *UnixRPC) SetEncoder(encoder encoder.JSONEncoder) {
 }
 
 // SetTimeout configures the per-call read/write deadline.
-// A zero or negative value disables the deadline.
+// A zero or negative value disables the deadline, which is
+// necessary for CLN blocking RPCs (e.g. waitanyinvoice,
+// waitblockheight) that may take an unbounded amount of time.
 func (self *UnixRPC) SetTimeout(timeout time.Duration) {
 	self.timeout = timeout
 }
