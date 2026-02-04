@@ -131,7 +131,7 @@ func Call[Req any, Resp any](client *UnixRPC, method string, data Req) (Resp, er
 
 	resp, err := decodeToResponse[Resp](client, buffer)
 	if err != nil {
-		return *new(Resp), jsonrpcv2.MakeRPCError(-32700, "decoding JSON fails, this is unexpected", map[string]any{"error": err})
+		return *new(Resp), jsonrpcv2.MakeRPCError(-32700, "decoding JSON failed, this is unexpected", map[string]any{"error": err})
 	}
 
 	if resp.Error != nil {
