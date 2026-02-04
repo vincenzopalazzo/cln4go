@@ -52,13 +52,13 @@ func (self *UnixRPC) SetTimeout(timeout time.Duration) {
 	self.timeout = timeout
 }
 
-func encodeToBytes[R any](client *UnixRPC, p R) []byte {
+func encodeToBytes[R any](client *UnixRPC, p R) ([]byte, error) {
 	buf, err := client.encoder.EncodeToByte(p)
 	if err != nil {
 		client.tracer.Tracef("%s", err)
-		panic(err)
+		return nil, err
 	}
-	return buf
+	return buf, nil
 }
 
 func decodeToResponse[R any](client *UnixRPC, s []byte) (*jsonrpcv2.Response[R], error) {
@@ -100,7 +100,10 @@ func Call[Req any, Resp any](client *UnixRPC, method string, data Req) (Resp, er
 		Jsonrpc: "2.0",
 		Id:      &id,
 	}
-	dataBytes := encodeToBytes(client, request)
+	dataBytes, err := encodeToBytes(client, request)
+	if err != nil {
+		return *new(Resp), jsonrpcv2.MakeRPCError(-1, "encoding JSON request failed", map[string]any{"error": err})
+	}
 
 	//send data
 	if _, err := socket.Write(dataBytes); err != nil {
