@@ -21,15 +21,15 @@ func startTestServer(t *testing.T, handler func(net.Conn)) string {
 		t.Fatal(err)
 	}
 	path := f.Name()
-	f.Close()
-	os.Remove(path)
-	t.Cleanup(func() { os.Remove(path) })
+	_ = f.Close()
+	_ = os.Remove(path)
+	t.Cleanup(func() { _ = os.Remove(path) })
 
 	ln, err := net.Listen("unix", path)
 	if err != nil {
 		t.Fatal(fmt.Errorf("listen %s: %w", path, err))
 	}
-	t.Cleanup(func() { ln.Close() })
+	t.Cleanup(func() { _ = ln.Close() })
 	go func() {
 		for {
 			conn, err := ln.Accept()
@@ -68,8 +68,8 @@ func TestCallServerCloseWithoutResponse(t *testing.T) {
 		// Read the request to avoid broken pipe on the client side,
 		// then close without writing a response.
 		buf := make([]byte, 4096)
-		conn.Read(buf)
-		conn.Close()
+		_, _ = conn.Read(buf)
+		_ = conn.Close()
 	})
 
 	client, err := NewUnix(path)
@@ -85,10 +85,10 @@ func TestCallServerCloseWithoutResponse(t *testing.T) {
 func TestCallServerRPCError(t *testing.T) {
 	path := startTestServer(t, func(conn net.Conn) {
 		buf := make([]byte, 4096)
-		conn.Read(buf)
+		_, _ = conn.Read(buf)
 		resp := `{"jsonrpc":"2.0","id":"cln4go/1","error":{"code":-32601,"message":"Unknown command"}}` + "\n\n"
-		conn.Write([]byte(resp))
-		conn.Close()
+		_, _ = conn.Write([]byte(resp))
+		_ = conn.Close()
 	})
 
 	client, err := NewUnix(path)
@@ -111,10 +111,10 @@ func TestCallServerRPCError(t *testing.T) {
 func TestCallSuccess(t *testing.T) {
 	path := startTestServer(t, func(conn net.Conn) {
 		buf := make([]byte, 4096)
-		conn.Read(buf)
+		_, _ = conn.Read(buf)
 		resp := `{"jsonrpc":"2.0","id":"cln4go/1","result":{"id":"test-node-id","alias":"test"}}` + "\n\n"
-		conn.Write([]byte(resp))
-		conn.Close()
+		_, _ = conn.Write([]byte(resp))
+		_ = conn.Close()
 	})
 
 	client, err := NewUnix(path)
@@ -138,10 +138,10 @@ func TestCallSuccessTyped(t *testing.T) {
 
 	path := startTestServer(t, func(conn net.Conn) {
 		buf := make([]byte, 4096)
-		conn.Read(buf)
+		_, _ = conn.Read(buf)
 		resp := `{"jsonrpc":"2.0","id":"cln4go/1","result":{"id":"test-node-id","alias":"test-alias"}}` + "\n\n"
-		conn.Write([]byte(resp))
-		conn.Close()
+		_, _ = conn.Write([]byte(resp))
+		_ = conn.Close()
 	})
 
 	client, err := NewUnix(path)
